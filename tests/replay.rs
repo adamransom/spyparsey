@@ -10,6 +10,8 @@ fn valid_replay() {
     let replay = Replay::from_reader(&mut file).unwrap();
 
     assert_eq!(replay.header().replay_version, 5);
+    assert_eq!(replay.header().protocol_version, 23);
+    assert_eq!(replay.header().spyparty_version, 6134);
 }
 
 #[test]

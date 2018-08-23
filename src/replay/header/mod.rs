@@ -10,6 +10,8 @@ use utils;
 #[derive(Debug, Default)]
 pub struct Header {
     pub replay_version: u32,
+    pub protocol_version: u32,
+    pub spyparty_version: u32,
 }
 
 impl Header {
@@ -19,6 +21,8 @@ impl Header {
 
         header.validate_identifier(reader)?;
         header.set_replay_version(reader)?;
+        header.set_protocol_version(reader)?;
+        header.set_spyparty_version(reader)?;
 
         Ok(header)
     }
@@ -38,6 +42,24 @@ impl Header {
         let version = utils::read_u32(reader)?;
 
         self.replay_version = version;
+
+        Ok(())
+    }
+
+    /// Read and set the protocol version.
+    fn set_protocol_version<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let version = utils::read_u32(reader)?;
+
+        self.protocol_version = version;
+
+        Ok(())
+    }
+
+    /// Read and set the SpyParty version.
+    fn set_spyparty_version<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let version = utils::read_u32(reader)?;
+
+        self.spyparty_version = version;
 
         Ok(())
     }
