@@ -41,15 +41,9 @@ impl std::error::Error for Error {
     }
 }
 
-/// Trait allowing something to be chained into a Result.
-pub trait ResultExt<T> {
-    fn chain_err(self) -> Result<T>;
-}
-
-/// Allow std::io::Result to be chained into a header Result.
-impl<T> ResultExt<T> for std::io::Result<T> {
-    fn chain_err(self) -> Result<T> {
-        self.map_err(move |e| Error::Io(e))
+impl From<std::io::Error> for Error {
+    fn from(err: std::io::Error) -> Self {
+        Error::Io(err)
     }
 }
 

@@ -3,7 +3,6 @@ pub mod error;
 
 pub use self::error::{Error, Result};
 
-use self::error::ResultExt;
 use std::io::Read;
 use utils;
 
@@ -27,15 +26,16 @@ impl Header {
     /// Checks the first 4 bytes of the header to make sure the header is valid.
     fn validate_identifier<R: Read>(&self, reader: &mut R) -> Result<()> {
         let mut id = [0; 4];
-        reader.read_exact(&mut id).chain_err()?;
+        reader.read_exact(&mut id)?;
 
         ensure!(&id == b"RPLY", Error::InvalidIdentifier);
 
         Ok(())
     }
 
+    /// Read and set the replay version.
     fn set_replay_version<R: Read>(&mut self, reader: &mut R) -> Result<()> {
-        let version = utils::read_u32(reader).chain_err()?;
+        let version = utils::read_u32(reader)?;
 
         self.replay_version = version;
 
