@@ -15,6 +15,12 @@ pub struct Header {
     pub flags: u32,
     pub duration: f32,
     pub game_id: u128,
+    pub start_time: u32,
+    pub play_id: u16,
+    pub spy_user_len: u8,
+    pub sniper_user_len: u8,
+    pub spy_display_len: u8,
+    pub sniper_display_len: u8,
 }
 
 impl Header {
@@ -29,6 +35,12 @@ impl Header {
         header.set_flags(reader)?;
         header.set_duration(reader)?;
         header.set_game_id(reader)?;
+        header.set_start_time(reader)?;
+        header.set_play_id(reader)?;
+        header.set_spy_user_len(reader)?;
+        header.set_sniper_user_len(reader)?;
+        header.set_spy_display_len(reader)?;
+        header.set_sniper_display_len(reader)?;
 
         Ok(header)
     }
@@ -93,6 +105,60 @@ impl Header {
         let game_id = utils::read_u128(reader)?;
 
         self.game_id = game_id;
+
+        Ok(())
+    }
+
+    /// Read and set the start time, as a UNIX timestamp.
+    fn set_start_time<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let time = utils::read_u32(reader)?;
+
+        self.start_time = time;
+
+        Ok(())
+    }
+
+    /// Read and set the play ID.
+    fn set_play_id<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let play_id = utils::read_u16(reader)?;
+
+        self.play_id = play_id;
+
+        Ok(())
+    }
+
+    /// Read and set the spy's username length.
+    fn set_spy_user_len<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let len = utils::read_u8(reader)?;
+
+        self.spy_user_len = len;
+
+        Ok(())
+    }
+
+    /// Read and set the sniper's username length.
+    fn set_sniper_user_len<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let len = utils::read_u8(reader)?;
+
+        self.sniper_user_len = len;
+
+        Ok(())
+    }
+
+    /// Read and set the spy's display name length.
+    fn set_spy_display_len<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let len = utils::read_u8(reader)?;
+
+        self.spy_display_len = len;
+
+        Ok(())
+    }
+
+    /// Read and set the sniper's display name length.
+    fn set_sniper_display_len<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let len = utils::read_u8(reader)?;
+
+        self.sniper_display_len = len;
 
         Ok(())
     }
