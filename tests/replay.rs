@@ -12,6 +12,9 @@ fn valid_replay() {
     assert_eq!(replay.header().replay_version, 5);
     assert_eq!(replay.header().protocol_version, 23);
     assert_eq!(replay.header().spyparty_version, 6134);
+    assert_eq!(replay.header().flags, 0);
+    assert_eq!(replay.header().duration, 125.3125);
+    assert_eq!(replay.header().game_id, 0x9dca1e19a581d2af884a4ff7b686b532);
 }
 
 #[test]

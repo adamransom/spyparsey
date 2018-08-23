@@ -12,6 +12,9 @@ pub struct Header {
     pub replay_version: u32,
     pub protocol_version: u32,
     pub spyparty_version: u32,
+    pub flags: u32,
+    pub duration: f32,
+    pub game_id: u128,
 }
 
 impl Header {
@@ -23,6 +26,9 @@ impl Header {
         header.set_replay_version(reader)?;
         header.set_protocol_version(reader)?;
         header.set_spyparty_version(reader)?;
+        header.set_flags(reader)?;
+        header.set_duration(reader)?;
+        header.set_game_id(reader)?;
 
         Ok(header)
     }
@@ -60,6 +66,33 @@ impl Header {
         let version = utils::read_u32(reader)?;
 
         self.spyparty_version = version;
+
+        Ok(())
+    }
+
+    /// Read and set the flags.
+    fn set_flags<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let flags = utils::read_u32(reader)?;
+
+        self.flags = flags;
+
+        Ok(())
+    }
+
+    /// Read and set the replay duration, in seconds.
+    fn set_duration<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let duration = utils::read_f32(reader)?;
+
+        self.duration = duration;
+
+        Ok(())
+    }
+
+    /// Read and set the game ID.
+    fn set_game_id<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let game_id = utils::read_u128(reader)?;
+
+        self.game_id = game_id;
 
         Ok(())
     }
