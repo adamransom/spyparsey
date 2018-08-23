@@ -39,8 +39,12 @@ impl Header {
         header.set_play_id(reader)?;
         header.set_spy_user_len(reader)?;
         header.set_sniper_user_len(reader)?;
-        header.set_spy_display_len(reader)?;
-        header.set_sniper_display_len(reader)?;
+
+        if header.replay_version == 5 {
+            header.set_spy_display_len(reader)?;
+            header.set_sniper_display_len(reader)?;
+            header.skip_unused(reader)?;
+        }
 
         Ok(header)
     }
@@ -56,8 +60,15 @@ impl Header {
     }
 
     /// Read and set the replay version.
+    ///
+    /// Currently versions 4 and 5 are supported.
     fn set_replay_version<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let version = utils::read_u32(reader)?;
+
+        ensure!(
+            version == 4 || version == 5,
+            Error::UnsupportedVersion(version)
+        );
 
         self.replay_version = version;
 
@@ -162,6 +173,14 @@ impl Header {
 
         Ok(())
     }
+
+    /// Skip an unused part of the header.
+    fn skip_unused<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let mut id = [0; 2];
+        reader.read_exact(&mut id)?;
+
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -198,6 +217,18 @@ mod tests {
 
         match validated {
             Err(Error::Io(_)) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn unsupported_version() {
+        let mut input: &[u8] = &[03, 00, 00, 00];
+        let mut header: Header = Default::default();
+        let validated = header.set_replay_version(&mut input);
+
+        match validated {
+            Err(Error::UnsupportedVersion(3)) => assert!(true),
             _ => assert!(false),
         }
     }

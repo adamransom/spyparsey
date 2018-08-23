@@ -14,6 +14,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     Io(std::io::Error),
     InvalidIdentifier,
+    UnsupportedVersion(u32),
 }
 
 impl fmt::Display for Error {
