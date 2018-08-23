@@ -7,9 +7,9 @@ use std::fs::File;
 fn valid_replay() {
     let mut file = File::open("tests/basic.replay").unwrap();
 
-    let replay = Replay::from_reader(&mut file);
+    let replay = Replay::from_reader(&mut file).unwrap();
 
-    assert!(replay.is_ok());
+    assert_eq!(replay.header().replay_version, 5);
 }
 
 #[test]

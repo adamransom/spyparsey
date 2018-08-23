@@ -3,6 +3,13 @@ use std::fmt;
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// The error type for errors that occur whilst reading the header.
+///
+/// # Notes
+///
+/// I've opted for specific error messages related to the format of the header so, for example, you
+/// would be able to tell the parsing failed because of an unuspported version. However, for IO
+/// errors there is just a single error type and it won't be clear which part of the file caused it
+/// (because usually it won't matter).
 #[derive(Debug)]
 pub enum Error {
     Io(std::io::Error),

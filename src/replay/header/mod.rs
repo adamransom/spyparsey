@@ -5,17 +5,21 @@ pub use self::error::{Error, Result};
 
 use self::error::ResultExt;
 use std::io::Read;
+use utils;
 
 /// The header of a replay.
-#[derive(Debug)]
-pub struct Header {}
+#[derive(Debug, Default)]
+pub struct Header {
+    pub replay_version: u32,
+}
 
 impl Header {
     /// Create a new header from a reader.
     pub fn from_reader<R: Read>(reader: &mut R) -> Result<Header> {
-        let header = Header {};
+        let mut header: Header = Default::default();
 
         header.validate_identifier(reader)?;
+        header.set_replay_version(reader)?;
 
         Ok(header)
     }
@@ -29,6 +33,14 @@ impl Header {
 
         Ok(())
     }
+
+    fn set_replay_version<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let version = utils::read_u32(reader).chain_err()?;
+
+        self.replay_version = version;
+
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -39,17 +51,19 @@ mod tests {
     #[test]
     fn valid_identifier() {
         let mut input: &[u8] = b"RPLY";
-        let header = Header::from_reader(&mut input);
+        let header: Header = Default::default();
+        let validated = header.validate_identifier(&mut input);
 
-        assert!(header.is_ok());
+        assert!(validated.is_ok());
     }
 
     #[test]
     fn invalid_identifier() {
         let mut input: &[u8] = b"NOPE";
-        let header = Header::from_reader(&mut input);
+        let header: Header = Default::default();
+        let validated = header.validate_identifier(&mut input);
 
-        match header {
+        match validated {
             Err(Error::InvalidIdentifier) => assert!(true),
             _ => assert!(false),
         }
@@ -57,10 +71,11 @@ mod tests {
 
     #[test]
     fn fail_read_identifier() {
-        let mut input: &[u8] = b"NOP";
-        let header = Header::from_reader(&mut input);
+        let mut input: &[u8] = b"RPL";
+        let header: Header = Default::default();
+        let validated = header.validate_identifier(&mut input);
 
-        match header {
+        match validated {
             Err(Error::Io(_)) => assert!(true),
             _ => assert!(false),
         }

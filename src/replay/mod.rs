@@ -16,4 +16,8 @@ impl Replay {
 
         Ok(Replay { header })
     }
+
+    pub fn header(&self) -> &Header {
+        &self.header
+    }
 }
