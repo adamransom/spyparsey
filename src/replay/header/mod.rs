@@ -330,7 +330,7 @@ mod tests {
 
     #[test]
     fn unsupported_version() {
-        let mut input: &[u8] = &[03, 00, 00, 00];
+        let mut input: &[u8] = &[3, 0, 0, 0];
         let mut header: Header = Default::default();
         let validated = header.set_replay_version(&mut input);
 

@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn flags_version_not_simple() {
-        let mut input: &[u8] = &[0x01, 00, 00, 00];
+        let mut input: &[u8] = &[0x01, 0, 0, 0];
         let mut data: ResultData = Default::default();
         data.set_flags(&mut input).unwrap();
 
@@ -99,7 +99,7 @@ mod tests {
 
     #[test]
     fn flags_version_simple() {
-        let mut input: &[u8] = &[0x11, 00, 00, 00];
+        let mut input: &[u8] = &[0x11, 0, 0, 0];
         let mut data: ResultData = Default::default();
         data.set_flags(&mut input).unwrap();
 
@@ -109,7 +109,7 @@ mod tests {
 
     #[test]
     fn unsupported_version() {
-        let mut input: &[u8] = &[0x03, 00, 00, 00];
+        let mut input: &[u8] = &[0x03, 0, 0, 0];
         let mut data: ResultData = Default::default();
         let validated = data.set_flags(&mut input);
 
@@ -121,7 +121,7 @@ mod tests {
 
     #[test]
     fn valid_game_result() {
-        let mut input: &[u8] = &[00, 00, 00, 00];
+        let mut input: &[u8] = &[0, 0, 0, 0];
         let mut data: ResultData = Default::default();
         data.set_game_result(&mut input).unwrap();
 
@@ -130,7 +130,7 @@ mod tests {
 
     #[test]
     fn invalid_game_result() {
-        let mut input: &[u8] = &[0x05, 00, 00, 00];
+        let mut input: &[u8] = &[5, 0, 0, 0];
         let mut data: ResultData = Default::default();
         let validated = data.set_game_result(&mut input);
 

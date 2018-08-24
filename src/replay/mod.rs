@@ -7,7 +7,7 @@ use self::header::Result;
 use std::io::Read;
 
 pub struct Replay {
-    header: Header,
+    pub header: Header,
 }
 
 impl Replay {
@@ -16,9 +16,5 @@ impl Replay {
         let header = Header::from_reader(reader)?;
 
         Ok(Replay { header })
-    }
-
-    pub fn header(&self) -> &Header {
-        &self.header
     }
 }
