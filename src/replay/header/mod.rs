@@ -11,24 +11,55 @@ use utils;
 /// The header of a replay.
 #[derive(Debug, Default)]
 pub struct Header {
+    /// The version of the replay.
+    ///
+    /// Currently only versions 4 and 5 are supported.
     pub replay_version: u32,
+    /// The verion of the protocol.
     pub protocol_version: u32,
+    /// The version of the SpyParty build that created the replay.
     pub spyparty_version: u32,
+    /// Some kind of flags.
+    ///
+    /// This is currently unused/unknown.
     pub flags: u32,
+    /// The duration of the replay in seconds.
     pub duration: f32,
+    /// The unique ID for this game.
     pub game_id: u128,
+    /// The time this game started, as a UNIX timestamp.
     pub start_time: u32,
+    /// The ID of this particular game in relation to an entire match.
     pub play_id: u16,
+    /// The length of the spy's username.
     pub spy_user_len: u8,
+    /// The length of the sniper's username.
     pub sniper_user_len: u8,
+    /// The length of the spy's display name.
+    ///
+    /// This was introduced to distinguish steam ID "names" from display names.
     pub spy_display_len: u8,
+    /// The length of the sniper's display name.
+    ///
+    /// This was introduced to distinguish steam ID "names" from display names.
     pub sniper_display_len: u8,
+    /// Data relating to the result of the game.
     pub result_data: ResultData,
+    /// The client latency when the game was played.
     pub latency: f32,
+    /// The size of the packet data that comes after the names.
     pub data_size: u32,
+    /// The spy's username.
     pub spy_user_name: String,
+    /// The sniper's username.
     pub sniper_user_name: String,
+    /// The spy's display name.
+    ///
+    /// This was introduced to distinguish steam ID "names" from display names.
     pub spy_display_name: Option<String>,
+    /// The sniper's display name.
+    ///
+    /// This was introduced to distinguish steam ID "names" from display names.
     pub sniper_display_name: Option<String>,
 }
 

@@ -20,8 +20,13 @@ impl Default for GameResult {
 
 #[derive(Debug, Default)]
 pub struct ResultData {
+    /// The version of the result data.
+    ///
+    /// Currently only versions 1 and 2 are supported.
     pub version: u32,
+    /// Whether or not this game was played with simple rules.
     pub simple_rules: bool,
+    /// The result of the game.
     pub game_result: GameResult,
 }
 

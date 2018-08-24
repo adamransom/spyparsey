@@ -7,6 +7,9 @@ use self::header::Result;
 use std::io::Read;
 
 pub struct Replay {
+    /// The header of the replay.
+    ///
+    /// This contains all the information describing the game.
     pub header: Header,
 }
 
