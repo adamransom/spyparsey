@@ -76,8 +76,37 @@ impl fmt::Display for Map {
         )
     }
 }
-/*
- */
+
+#[derive(Debug, PartialEq)]
+pub enum Mission {
+    BugAmbassador,
+    ContactDoubleAgent,
+    FingerprintAmbassador,
+    InspectStatues,
+    PurloinGuestList,
+    SeduceTarget,
+    SwapStatue,
+    TransferMicrofilm,
+}
+
+impl fmt::Display for Mission {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Mission::BugAmbassador => "Bug Ambassador",
+                Mission::ContactDoubleAgent => "Contact Double Agent",
+                Mission::FingerprintAmbassador => "Fingerprint Ambassador",
+                Mission::InspectStatues => "Inspect Statues",
+                Mission::PurloinGuestList => "Purloin Guest List",
+                Mission::SeduceTarget => "Seduce Target",
+                Mission::SwapStatue => "Swap Statue",
+                Mission::TransferMicrofilm => "Transfer Microfilm",
+            }
+        )
+    }
+}
 
 #[derive(Debug, Default)]
 pub struct ResultData {
@@ -101,6 +130,12 @@ pub struct ResultData {
     pub game_mode: GameMode,
     /// The map the game was played on.
     pub map: Map,
+    /// The missions that the spy selected.
+    pub selected_missions: Vec<Mission>,
+    /// The missions that the spy picked (for "Pick" game mode).
+    pub picked_missions: Vec<Mission>,
+    /// The missions the spy completed.
+    pub completed_missions: Vec<Mission>,
 }
 
 /// The result data contained in the header of a replay.
@@ -115,13 +150,14 @@ impl ResultData {
         result_data.set_total_missions(reader)?;
         result_data.set_game_mode(reader)?;
         result_data.set_map(reader)?;
+        result_data.set_selected_missions(reader)?;
+        result_data.set_picked_missions(reader)?;
+        result_data.set_completed_missions(reader)?;
 
         // Skip the rest
         if result_data.version == 1 {
-            let mut id = [0; 12];
-            reader.read_exact(&mut id)?;
         } else {
-            let mut id = [0; 20];
+            let mut id = [0; 8];
             reader.read_exact(&mut id)?;
         }
 
@@ -237,6 +273,72 @@ impl ResultData {
 
         Ok(())
     }
+
+    /// Read and set the selected missions.
+    fn set_selected_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let missions = utils::read_u32(reader)?;
+
+        self.selected_missions = unpack_missions(missions);
+
+        Ok(())
+    }
+
+    /// Read and set the picked missions.
+    fn set_picked_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let missions = utils::read_u32(reader)?;
+
+        self.picked_missions = unpack_missions(missions);
+
+        Ok(())
+    }
+
+    /// Read and set the completed missions.
+    fn set_completed_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let missions = utils::read_u32(reader)?;
+
+        self.completed_missions = unpack_missions(missions);
+
+        Ok(())
+    }
+}
+
+// Unpacks a bitfield of missions into a vector.
+fn unpack_missions(data: u32) -> Vec<Mission> {
+    let mut missions: Vec<Mission> = Vec::new();
+
+    if data & (1 << 0) != 0 {
+        missions.push(Mission::BugAmbassador);
+    }
+
+    if data & (1 << 1) != 0 {
+        missions.push(Mission::ContactDoubleAgent);
+    }
+
+    if data & (1 << 2) != 0 {
+        missions.push(Mission::TransferMicrofilm);
+    }
+
+    if data & (1 << 3) != 0 {
+        missions.push(Mission::SwapStatue);
+    }
+
+    if data & (1 << 4) != 0 {
+        missions.push(Mission::InspectStatues);
+    }
+
+    if data & (1 << 5) != 0 {
+        missions.push(Mission::SeduceTarget);
+    }
+
+    if data & (1 << 6) != 0 {
+        missions.push(Mission::PurloinGuestList);
+    }
+
+    if data & (1 << 7) != 0 {
+        missions.push(Mission::FingerprintAmbassador);
+    }
+
+    missions
 }
 
 #[cfg(test)]

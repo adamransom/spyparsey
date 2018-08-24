@@ -1,6 +1,6 @@
 extern crate spyparty;
 
-use spyparty::replay::{GameMode, GameResult, Map};
+use spyparty::replay::{GameMode, GameResult, Map, Mission};
 use spyparty::Replay;
 use std::fs::File;
 
@@ -35,6 +35,34 @@ fn valid_replay_v5() {
     assert_eq!(replay.header.result_data.total_missions, 7);
     assert_eq!(replay.header.result_data.game_mode, GameMode::Any);
     assert_eq!(replay.header.result_data.map, Map::Courtyard);
+    assert_eq!(
+        replay.header.result_data.selected_missions,
+        vec![
+            Mission::BugAmbassador,
+            Mission::ContactDoubleAgent,
+            Mission::SwapStatue,
+            Mission::InspectStatues,
+            Mission::SeduceTarget,
+            Mission::PurloinGuestList,
+            Mission::FingerprintAmbassador
+        ]
+    );
+    assert_eq!(
+        replay.header.result_data.picked_missions,
+        vec![
+            Mission::BugAmbassador,
+            Mission::ContactDoubleAgent,
+            Mission::SwapStatue,
+            Mission::InspectStatues,
+            Mission::SeduceTarget,
+            Mission::PurloinGuestList,
+            Mission::FingerprintAmbassador
+        ]
+    );
+    assert_eq!(
+        replay.header.result_data.completed_missions,
+        vec![Mission::ContactDoubleAgent, Mission::PurloinGuestList]
+    );
 }
 
 #[test]
@@ -68,6 +96,28 @@ fn valid_replay_v4() {
     assert_eq!(replay.header.result_data.total_missions, 4);
     assert_eq!(replay.header.result_data.game_mode, GameMode::Known);
     assert_eq!(replay.header.result_data.map, Map::Ballroom);
+    assert_eq!(
+        replay.header.result_data.selected_missions,
+        vec![
+            Mission::BugAmbassador,
+            Mission::ContactDoubleAgent,
+            Mission::SwapStatue,
+            Mission::SeduceTarget
+        ]
+    );
+    assert_eq!(
+        replay.header.result_data.picked_missions,
+        vec![
+            Mission::BugAmbassador,
+            Mission::ContactDoubleAgent,
+            Mission::SwapStatue,
+            Mission::SeduceTarget
+        ]
+    );
+    assert_eq!(
+        replay.header.result_data.completed_missions,
+        vec![Mission::BugAmbassador]
+    );
 }
 
 #[test]
