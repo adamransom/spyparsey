@@ -31,9 +31,7 @@ fn valid_replay_v5() {
     assert_eq!(replay.header.result_data.version, 2);
     assert_eq!(replay.header.result_data.simple_rules, false);
     assert_eq!(replay.header.result_data.game_result, GameResult::SpyShot);
-    assert_eq!(replay.header.result_data.missions_required, 4);
-    assert_eq!(replay.header.result_data.total_missions, 7);
-    assert_eq!(replay.header.result_data.game_mode, GameMode::Any);
+    assert_eq!(replay.header.result_data.game_mode, GameMode::Any(4, 7));
     assert_eq!(replay.header.result_data.map, Map::Courtyard);
     assert_eq!(
         replay.header.result_data.selected_missions,
@@ -94,9 +92,7 @@ fn valid_replay_v4() {
     assert_eq!(replay.header.result_data.version, 1);
     assert_eq!(replay.header.result_data.simple_rules, true);
     assert_eq!(replay.header.result_data.game_result, GameResult::SpyShot);
-    assert_eq!(replay.header.result_data.missions_required, 4);
-    assert_eq!(replay.header.result_data.total_missions, 4);
-    assert_eq!(replay.header.result_data.game_mode, GameMode::Known);
+    assert_eq!(replay.header.result_data.game_mode, GameMode::Known(4));
     assert_eq!(replay.header.result_data.map, Map::Ballroom);
     assert_eq!(
         replay.header.result_data.selected_missions,

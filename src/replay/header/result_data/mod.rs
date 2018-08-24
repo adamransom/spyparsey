@@ -23,14 +23,6 @@ pub struct ResultData {
     pub simple_rules: bool,
     /// The result of the game.
     pub game_result: GameResult,
-    /// The number of mission completed required to win.
-    ///
-    /// This is the X in "Any X of Y".
-    pub missions_required: u8,
-    /// The total number of missions available to complete.
-    ///
-    /// This is the Y in "Any X of Y".
-    pub total_missions: u16,
     /// The mode of the game.
     pub game_mode: GameMode,
     /// The map the game was played on.
@@ -59,8 +51,6 @@ impl ResultData {
 
         result_data.set_flags(reader)?;
         result_data.set_game_result(reader)?;
-        result_data.set_missions_required(reader)?;
-        result_data.set_total_missions(reader)?;
         result_data.set_game_mode(reader)?;
         result_data.set_map(reader)?;
         result_data.set_selected_missions(reader)?;
@@ -105,43 +95,9 @@ impl ResultData {
         Ok(())
     }
 
-    /// Read and set the number of mission completes required to win.
-    fn set_missions_required<R: Read>(&mut self, reader: &mut R) -> Result<()> {
-        let num = utils::read_u8(reader)?;
-
-        self.missions_required = num;
-
-        Ok(())
-    }
-
-    /// Read and set the total number of missions available to complete.
-    fn set_total_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
-        let total = utils::read_u16(reader)?;
-
-        self.total_missions = match total {
-            0x00C0 => 3,
-            0x0100 => 4,
-            0x0140 => 5,
-            0x0180 => 6,
-            0x01C0 => 7,
-            0x0200 => 8,
-            _ => {
-                // If we are using simple rules, its always "Known 4 of 4" so the total missions is
-                // the same as the required missions.
-                if self.simple_rules {
-                    self.missions_required as u16
-                } else {
-                    bail!(Error::InvalidTotalMissions(total));
-                }
-            }
-        };
-
-        Ok(())
-    }
-
     /// Read and set the game mode.
     fn set_game_mode<R: Read>(&mut self, reader: &mut R) -> Result<()> {
-        let mode = utils::read_u8(reader)?;
+        let mode = utils::read_u32(reader)?;
 
         self.game_mode = mode.try_into()?;
 
@@ -240,38 +196,6 @@ mod tests {
 
         match validated {
             Err(Error::UnsupportedResultVersion(3)) => assert!(true),
-            _ => assert!(false),
-        }
-    }
-
-    #[test]
-    fn valid_total_missions_not_simple() {
-        let mut input: &[u8] = &[0x40, 0x01];
-        let mut data: ResultData = Default::default();
-        data.set_total_missions(&mut input).unwrap();
-
-        assert_eq!(data.total_missions, 5);
-    }
-
-    #[test]
-    fn valid_total_missions_simple() {
-        let mut input: &[u8] = &[0, 0];
-        let mut data: ResultData = Default::default();
-        data.simple_rules = true;
-        data.missions_required = 4;
-        data.set_total_missions(&mut input).unwrap();
-
-        assert_eq!(data.total_missions, 4);
-    }
-
-    #[test]
-    fn invalid_total_missions_not_simple() {
-        let mut input: &[u8] = &[0, 0];
-        let mut data: ResultData = Default::default();
-        let validated = data.set_total_missions(&mut input);
-
-        match validated {
-            Err(Error::InvalidTotalMissions(0)) => assert!(true),
             _ => assert!(false),
         }
     }
