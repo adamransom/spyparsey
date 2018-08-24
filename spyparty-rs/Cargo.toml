@@ -1,0 +1,8 @@
+[package]
+name = "spyparty"
+version = "0.1.0"
+authors = ["Adam Ransom"]
+
+[dependencies.byteorder]
+version = "1"
+features = ["i128"]

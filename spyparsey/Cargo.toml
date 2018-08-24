@@ -1,0 +1,7 @@
+[package]
+name = "spyparsey"
+version = "0.1.0"
+authors = ["Adam Ransom"]
+
+[dependencies]
+spyparty = { path = "../spyparty-rs" }
