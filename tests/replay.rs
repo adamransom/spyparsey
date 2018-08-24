@@ -1,6 +1,6 @@
 extern crate spyparty;
 
-use spyparty::replay::GameResult;
+use spyparty::replay::{GameMode, GameResult};
 use spyparty::Replay;
 use std::fs::File;
 
@@ -33,6 +33,7 @@ fn valid_replay_v5() {
     assert_eq!(replay.header.result_data.game_result, GameResult::SpyShot);
     assert_eq!(replay.header.result_data.missions_required, 4);
     assert_eq!(replay.header.result_data.total_missions, 7);
+    assert_eq!(replay.header.result_data.game_mode, GameMode::Any);
 }
 
 #[test]
@@ -64,6 +65,7 @@ fn valid_replay_v4() {
     assert_eq!(replay.header.result_data.game_result, GameResult::SpyShot);
     assert_eq!(replay.header.result_data.missions_required, 4);
     assert_eq!(replay.header.result_data.total_missions, 4);
+    assert_eq!(replay.header.result_data.game_mode, GameMode::Known);
 }
 
 #[test]

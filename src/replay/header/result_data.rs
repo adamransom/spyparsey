@@ -18,6 +18,20 @@ impl Default for GameResult {
     }
 }
 
+/// The game mode of a game.
+#[derive(Debug, PartialEq)]
+pub enum GameMode {
+    Known,
+    Pick,
+    Any,
+}
+
+impl Default for GameMode {
+    fn default() -> GameMode {
+        GameMode::Known
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct ResultData {
     /// The version of the result data.
@@ -36,6 +50,8 @@ pub struct ResultData {
     ///
     /// This is the Y in "Any X of Y".
     pub total_missions: u16,
+    /// The mode of the game.
+    pub game_mode: GameMode,
 }
 
 /// The result data contained in the header of a replay.
@@ -48,13 +64,14 @@ impl ResultData {
         result_data.set_game_result(reader)?;
         result_data.set_missions_required(reader)?;
         result_data.set_total_missions(reader)?;
+        result_data.set_game_mode(reader)?;
 
         // Skip the rest
         if result_data.version == 1 {
-            let mut id = [0; 17];
+            let mut id = [0; 16];
             reader.read_exact(&mut id)?;
         } else {
-            let mut id = [0; 25];
+            let mut id = [0; 24];
             reader.read_exact(&mut id)?;
         }
 
@@ -126,6 +143,20 @@ impl ResultData {
                     bail!(Error::InvalidTotalMissions(total));
                 }
             }
+        };
+
+        Ok(())
+    }
+
+    /// Read and set the game mode.
+    fn set_game_mode<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let mode = utils::read_u8(reader)?;
+
+        self.game_mode = match mode {
+            0x00 => GameMode::Known,
+            0x10 => GameMode::Pick,
+            0x20 => GameMode::Any,
+            _ => bail!(Error::InvalidGameMode(mode)),
         };
 
         Ok(())
@@ -217,6 +248,18 @@ mod tests {
 
         match validated {
             Err(Error::InvalidTotalMissions(0)) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn invalid_game_mode() {
+        let mut input: &[u8] = &[9];
+        let mut data: ResultData = Default::default();
+        let validated = data.set_game_mode(&mut input);
+
+        match validated {
+            Err(Error::InvalidGameMode(9)) => assert!(true),
             _ => assert!(false),
         }
     }
