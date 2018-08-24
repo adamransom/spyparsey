@@ -1,4 +1,5 @@
 #![feature(extern_prelude)]
+#![feature(try_from)]
 
 extern crate byteorder;
 

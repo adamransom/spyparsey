@@ -1,112 +1,17 @@
+pub mod game_mode;
+pub mod game_result;
+pub mod map;
+pub mod mission;
+
+pub use self::game_mode::GameMode;
+pub use self::game_result::GameResult;
+pub use self::map::Map;
+pub use self::mission::Mission;
+
 use replay::header::{Error, Result};
-use std::fmt;
+use std::convert::TryInto;
 use std::io::Read;
 use utils;
-
-/// The result of a game.
-#[derive(Debug, PartialEq)]
-pub enum GameResult {
-    MissionsWin,
-    SpyTimeout,
-    SpyShot,
-    CivilianShot,
-    InProgress,
-}
-
-impl Default for GameResult {
-    fn default() -> GameResult {
-        GameResult::InProgress
-    }
-}
-
-/// The game mode of a game.
-#[derive(Debug, PartialEq)]
-pub enum GameMode {
-    Known,
-    Pick,
-    Any,
-}
-
-impl Default for GameMode {
-    fn default() -> GameMode {
-        GameMode::Known
-    }
-}
-
-/// The maps of SpyParty.
-#[derive(Debug, PartialEq)]
-pub enum Map {
-    Balcony,
-    Ballroom,
-    Courtyard,
-    Gallery,
-    HighRise,
-    Library,
-    Moderne,
-    Pub,
-    Terrace,
-    Veranda,
-    Unknown(u32),
-}
-
-impl Default for Map {
-    fn default() -> Map {
-        Map::Unknown(0)
-    }
-}
-
-impl fmt::Display for Map {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                Map::Balcony => "Balcony",
-                Map::Ballroom => "Ballroom",
-                Map::Courtyard => "Courtyard",
-                Map::Gallery => "Gallery",
-                Map::HighRise => "High-Rise",
-                Map::Library => "Library",
-                Map::Moderne => "Moderne",
-                Map::Pub => "Pub",
-                Map::Terrace => "Terrace",
-                Map::Veranda => "Veranda",
-                Map::Unknown(_) => "Unknown",
-            }
-        )
-    }
-}
-
-#[derive(Debug, PartialEq)]
-pub enum Mission {
-    BugAmbassador,
-    ContactDoubleAgent,
-    FingerprintAmbassador,
-    InspectStatues,
-    PurloinGuestList,
-    SeduceTarget,
-    SwapStatue,
-    TransferMicrofilm,
-}
-
-impl fmt::Display for Mission {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                Mission::BugAmbassador => "Bug Ambassador",
-                Mission::ContactDoubleAgent => "Contact Double Agent",
-                Mission::FingerprintAmbassador => "Fingerprint Ambassador",
-                Mission::InspectStatues => "Inspect Statues",
-                Mission::PurloinGuestList => "Purloin Guest List",
-                Mission::SeduceTarget => "Seduce Target",
-                Mission::SwapStatue => "Swap Statue",
-                Mission::TransferMicrofilm => "Transfer Microfilm",
-            }
-        )
-    }
-}
 
 #[derive(Debug, Default)]
 pub struct ResultData {
@@ -195,14 +100,7 @@ impl ResultData {
     fn set_game_result<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let result = utils::read_u32(reader)?;
 
-        self.game_result = match result {
-            0 => GameResult::MissionsWin,
-            1 => GameResult::SpyTimeout,
-            2 => GameResult::SpyShot,
-            3 => GameResult::CivilianShot,
-            4 => GameResult::InProgress,
-            _ => bail!(Error::InvalidGameResult(result)),
-        };
+        self.game_result = result.try_into()?;
 
         Ok(())
     }
@@ -245,12 +143,7 @@ impl ResultData {
     fn set_game_mode<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let mode = utils::read_u8(reader)?;
 
-        self.game_mode = match mode {
-            0x00 => GameMode::Known,
-            0x10 => GameMode::Pick,
-            0x20 => GameMode::Any,
-            _ => bail!(Error::InvalidGameMode(mode)),
-        };
+        self.game_mode = mode.try_into()?;
 
         Ok(())
     }
@@ -264,19 +157,7 @@ impl ResultData {
     fn set_map<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let map = utils::read_u32(reader)?;
 
-        self.map = match map {
-            0x1dbd8e41 => Map::Balcony,
-            0x5b121925 => Map::Ballroom,
-            0x9dc5bb5e => Map::Courtyard,
-            0x7173b8bf => Map::Gallery,
-            0x1a56c5a1 => Map::HighRise,
-            0x168f4f62 => Map::Library,
-            0x2e37f15b => Map::Moderne,
-            0x3b85fff3 => Map::Pub,
-            0x9032ce22 => Map::Terrace,
-            0x6f81a558 => Map::Veranda,
-            _ => Map::Unknown(map),
-        };
+        self.map = map.into();
 
         Ok(())
     }
@@ -285,7 +166,7 @@ impl ResultData {
     fn set_selected_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let missions = utils::read_u32(reader)?;
 
-        self.selected_missions = unpack_missions(missions);
+        self.selected_missions = mission::unpack_missions(missions);
 
         Ok(())
     }
@@ -294,7 +175,7 @@ impl ResultData {
     fn set_picked_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let missions = utils::read_u32(reader)?;
 
-        self.picked_missions = unpack_missions(missions);
+        self.picked_missions = mission::unpack_missions(missions);
 
         Ok(())
     }
@@ -303,7 +184,7 @@ impl ResultData {
     fn set_completed_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let missions = utils::read_u32(reader)?;
 
-        self.completed_missions = unpack_missions(missions);
+        self.completed_missions = mission::unpack_missions(missions);
 
         Ok(())
     }
@@ -325,45 +206,6 @@ impl ResultData {
 
         Ok(())
     }
-}
-
-// Unpacks a bitfield of missions into a vector.
-fn unpack_missions(data: u32) -> Vec<Mission> {
-    let mut missions: Vec<Mission> = Vec::new();
-
-    if data & (1 << 0) != 0 {
-        missions.push(Mission::BugAmbassador);
-    }
-
-    if data & (1 << 1) != 0 {
-        missions.push(Mission::ContactDoubleAgent);
-    }
-
-    if data & (1 << 2) != 0 {
-        missions.push(Mission::TransferMicrofilm);
-    }
-
-    if data & (1 << 3) != 0 {
-        missions.push(Mission::SwapStatue);
-    }
-
-    if data & (1 << 4) != 0 {
-        missions.push(Mission::InspectStatues);
-    }
-
-    if data & (1 << 5) != 0 {
-        missions.push(Mission::SeduceTarget);
-    }
-
-    if data & (1 << 6) != 0 {
-        missions.push(Mission::PurloinGuestList);
-    }
-
-    if data & (1 << 7) != 0 {
-        missions.push(Mission::FingerprintAmbassador);
-    }
-
-    missions
 }
 
 #[cfg(test)]
@@ -403,27 +245,6 @@ mod tests {
     }
 
     #[test]
-    fn valid_game_result() {
-        let mut input: &[u8] = &[0, 0, 0, 0];
-        let mut data: ResultData = Default::default();
-        data.set_game_result(&mut input).unwrap();
-
-        assert_eq!(data.game_result, GameResult::MissionsWin);
-    }
-
-    #[test]
-    fn invalid_game_result() {
-        let mut input: &[u8] = &[5, 0, 0, 0];
-        let mut data: ResultData = Default::default();
-        let validated = data.set_game_result(&mut input);
-
-        match validated {
-            Err(Error::InvalidGameResult(5)) => assert!(true),
-            _ => assert!(false),
-        }
-    }
-
-    #[test]
     fn valid_total_missions_not_simple() {
         let mut input: &[u8] = &[0x40, 0x01];
         let mut data: ResultData = Default::default();
@@ -451,18 +272,6 @@ mod tests {
 
         match validated {
             Err(Error::InvalidTotalMissions(0)) => assert!(true),
-            _ => assert!(false),
-        }
-    }
-
-    #[test]
-    fn invalid_game_mode() {
-        let mut input: &[u8] = &[9];
-        let mut data: ResultData = Default::default();
-        let validated = data.set_game_mode(&mut input);
-
-        match validated {
-            Err(Error::InvalidGameMode(9)) => assert!(true),
             _ => assert!(false),
         }
     }
