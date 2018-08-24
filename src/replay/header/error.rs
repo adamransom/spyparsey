@@ -20,6 +20,7 @@ pub enum Error {
     MissingSniperUsername,
     InvalidString(std::string::FromUtf8Error),
     InvalidGameResult(u32),
+    InvalidTotalMissions(u16),
 }
 
 impl fmt::Display for Error {
@@ -35,6 +36,7 @@ impl fmt::Display for Error {
             Error::MissingSniperUsername => write!(f, "missing sniper username"),
             Error::InvalidString(err) => write!(f, "invalid UTF8 string ({})", err),
             Error::InvalidGameResult(result) => write!(f, "invalid game result ({})", result),
+            Error::InvalidTotalMissions(total) => write!(f, "invalid total missions ({})", total),
         }
     }
 }

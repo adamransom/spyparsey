@@ -31,6 +31,8 @@ fn valid_replay_v5() {
     assert_eq!(replay.header.result_data.version, 2);
     assert_eq!(replay.header.result_data.simple_rules, false);
     assert_eq!(replay.header.result_data.game_result, GameResult::SpyShot);
+    assert_eq!(replay.header.result_data.missions_required, 4);
+    assert_eq!(replay.header.result_data.total_missions, 7);
 }
 
 #[test]
@@ -60,6 +62,8 @@ fn valid_replay_v4() {
     assert_eq!(replay.header.result_data.version, 1);
     assert_eq!(replay.header.result_data.simple_rules, true);
     assert_eq!(replay.header.result_data.game_result, GameResult::SpyShot);
+    assert_eq!(replay.header.result_data.missions_required, 4);
+    assert_eq!(replay.header.result_data.total_missions, 4);
 }
 
 #[test]
