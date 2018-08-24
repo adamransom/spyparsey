@@ -3,7 +3,7 @@ pub mod error;
 pub mod result_data;
 
 pub use self::error::{Error, Result};
-pub use self::result_data::ResultData;
+pub use self::result_data::{GameResult, ResultData};
 
 use std::io::Read;
 use utils;

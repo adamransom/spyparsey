@@ -19,6 +19,7 @@ pub enum Error {
     MissingSpyUsername,
     MissingSniperUsername,
     InvalidString(std::string::FromUtf8Error),
+    InvalidGameResult(u32),
 }
 
 impl fmt::Display for Error {
@@ -33,6 +34,7 @@ impl fmt::Display for Error {
             Error::MissingSpyUsername => write!(f, "missing spy username"),
             Error::MissingSniperUsername => write!(f, "missing sniper username"),
             Error::InvalidString(err) => write!(f, "invalid UTF8 string ({})", err),
+            Error::InvalidGameResult(result) => write!(f, "invalid game result ({})", result),
         }
     }
 }
@@ -58,12 +60,20 @@ impl From<std::string::FromUtf8Error> for Error {
     }
 }
 
+/// Simple macro to allow returning early with an error.
+#[macro_export]
+macro_rules! bail {
+    ($e:expr) => {
+        return Err($e);
+    };
+}
+
 /// Simple macro to allow returning early with an error if a condition isn't satisfied.
 #[macro_export]
 macro_rules! ensure {
     ($cond:expr, $e:expr) => {
         if !($cond) {
-            return Err($e);
+            bail!($e);
         }
     };
 }

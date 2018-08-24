@@ -1,5 +1,6 @@
 extern crate spyparty;
 
+use spyparty::replay::GameResult;
 use spyparty::Replay;
 use std::fs::File;
 
@@ -29,6 +30,7 @@ fn valid_replay_v5() {
     assert_eq!(replay.header().sniper_display_name, None);
     assert_eq!(replay.header().result_data.version, 2);
     assert_eq!(replay.header().result_data.simple_rules, false);
+    assert_eq!(replay.header().result_data.game_result, GameResult::SpyShot);
 }
 
 #[test]
@@ -57,6 +59,7 @@ fn valid_replay_v4() {
     assert_eq!(replay.header().sniper_display_name, None);
     assert_eq!(replay.header().result_data.version, 1);
     assert_eq!(replay.header().result_data.simple_rules, true);
+    assert_eq!(replay.header().result_data.game_result, GameResult::SpyShot);
 }
 
 #[test]

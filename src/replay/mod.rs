@@ -1,5 +1,6 @@
 mod header;
 
+pub use self::header::GameResult;
 pub use self::header::Header;
 
 use self::header::Result;

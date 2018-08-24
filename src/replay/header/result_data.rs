@@ -2,10 +2,27 @@ use replay::header::{Error, Result};
 use std::io::Read;
 use utils;
 
+/// The result of a game.
+#[derive(Debug, PartialEq)]
+pub enum GameResult {
+    MissionsWin,
+    SpyTimeout,
+    SpyShot,
+    CivilianShot,
+    InProgress,
+}
+
+impl Default for GameResult {
+    fn default() -> GameResult {
+        GameResult::InProgress
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct ResultData {
     pub version: u32,
     pub simple_rules: bool,
+    pub game_result: GameResult,
 }
 
 /// The result data contained in the header of a replay.
@@ -15,13 +32,14 @@ impl ResultData {
         let mut result_data: ResultData = Default::default();
 
         result_data.set_flags(reader)?;
+        result_data.set_game_result(reader)?;
 
         // Skip the rest
         if result_data.version == 1 {
-            let mut id = [0; 24];
+            let mut id = [0; 20];
             reader.read_exact(&mut id)?;
         } else {
-            let mut id = [0; 32];
+            let mut id = [0; 28];
             reader.read_exact(&mut id)?;
         }
 
@@ -44,6 +62,22 @@ impl ResultData {
 
         self.version = version;
         self.simple_rules = simple;
+
+        Ok(())
+    }
+
+    /// Read and set the game result.
+    fn set_game_result<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let result = utils::read_u32(reader)?;
+
+        self.game_result = match result {
+            0 => GameResult::MissionsWin,
+            1 => GameResult::SpyTimeout,
+            2 => GameResult::SpyShot,
+            3 => GameResult::CivilianShot,
+            4 => GameResult::InProgress,
+            _ => bail!(Error::InvalidGameResult(result)),
+        };
 
         Ok(())
     }
@@ -81,6 +115,27 @@ mod tests {
 
         match validated {
             Err(Error::UnsupportedResultVersion(3)) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn valid_game_result() {
+        let mut input: &[u8] = &[00, 00, 00, 00];
+        let mut data: ResultData = Default::default();
+        data.set_game_result(&mut input).unwrap();
+
+        assert_eq!(data.game_result, GameResult::MissionsWin);
+    }
+
+    #[test]
+    fn invalid_game_result() {
+        let mut input: &[u8] = &[0x05, 00, 00, 00];
+        let mut data: ResultData = Default::default();
+        let validated = data.set_game_result(&mut input);
+
+        match validated {
+            Err(Error::InvalidGameResult(5)) => assert!(true),
             _ => assert!(false),
         }
     }
