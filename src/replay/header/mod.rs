@@ -21,6 +21,8 @@ pub struct Header {
     pub sniper_user_len: u8,
     pub spy_display_len: u8,
     pub sniper_display_len: u8,
+    pub latency: f32,
+    pub data_size: u32,
 }
 
 impl Header {
@@ -45,6 +47,10 @@ impl Header {
             header.set_sniper_display_len(reader)?;
             header.skip_unused(reader)?;
         }
+
+        header.set_result_data(reader)?;
+        header.set_latency(reader)?;
+        header.set_data_size(reader)?;
 
         Ok(header)
     }
@@ -178,6 +184,40 @@ impl Header {
     fn skip_unused<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let mut id = [0; 2];
         reader.read_exact(&mut id)?;
+
+        Ok(())
+    }
+
+    /// Read and set the result data.
+    fn set_result_data<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        // Just skip it for now
+        if self.replay_version == 4 {
+            let mut id = [0; 28];
+            reader.read_exact(&mut id)?;
+        } else {
+            let mut id = [0; 36];
+            reader.read_exact(&mut id)?;
+        }
+
+        Ok(())
+    }
+
+    /// Read and set the client latency.
+    ///
+    /// Note: This always seems to be 0.75 in my tests.
+    fn set_latency<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let latency = utils::read_f32(reader)?;
+
+        self.latency = latency;
+
+        Ok(())
+    }
+
+    /// Read and set the data size (remaining data after the names).
+    fn set_data_size<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let size = utils::read_u32(reader)?;
+
+        self.data_size = size;
 
         Ok(())
     }

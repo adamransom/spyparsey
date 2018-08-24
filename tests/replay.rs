@@ -21,6 +21,8 @@ fn valid_replay_v5() {
     assert_eq!(replay.header().sniper_user_len, 9);
     assert_eq!(replay.header().spy_display_len, 0);
     assert_eq!(replay.header().sniper_display_len, 0);
+    assert_eq!(replay.header().latency, 0.75);
+    assert_eq!(replay.header().data_size, 92399);
 }
 
 #[test]
@@ -41,6 +43,8 @@ fn valid_replay_v4() {
     assert_eq!(replay.header().sniper_user_len, 9);
     assert_eq!(replay.header().spy_display_len, 0);
     assert_eq!(replay.header().sniper_display_len, 0);
+    assert_eq!(replay.header().latency, 0.75);
+    assert_eq!(replay.header().data_size, 125564);
 }
 
 #[test]
