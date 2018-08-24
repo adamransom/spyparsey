@@ -63,6 +63,8 @@ fn valid_replay_v5() {
         replay.header.result_data.completed_missions,
         vec![Mission::ContactDoubleAgent, Mission::PurloinGuestList]
     );
+    assert_eq!(replay.header.result_data.guests, Some(16));
+    assert_eq!(replay.header.result_data.clock_start, Some(180));
 }
 
 #[test]
@@ -118,6 +120,8 @@ fn valid_replay_v4() {
         replay.header.result_data.completed_missions,
         vec![Mission::BugAmbassador]
     );
+    assert_eq!(replay.header.result_data.guests, None);
+    assert_eq!(replay.header.result_data.clock_start, None);
 }
 
 #[test]

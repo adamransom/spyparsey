@@ -136,6 +136,14 @@ pub struct ResultData {
     pub picked_missions: Vec<Mission>,
     /// The missions the spy completed.
     pub completed_missions: Vec<Mission>,
+    /// The number of guests at the party.
+    ///
+    /// This is optional because it's only available from version 2 onwards.
+    pub guests: Option<u32>,
+    /// The time on the clock at the start of the game in seconds.
+    ///
+    /// This is optional because it's only available from version 2 onwards.
+    pub clock_start: Option<u32>,
 }
 
 /// The result data contained in the header of a replay.
@@ -155,10 +163,9 @@ impl ResultData {
         result_data.set_completed_missions(reader)?;
 
         // Skip the rest
-        if result_data.version == 1 {
-        } else {
-            let mut id = [0; 8];
-            reader.read_exact(&mut id)?;
+        if result_data.version == 2 {
+            result_data.set_guests(reader)?;
+            result_data.set_clock_start(reader)?;
         }
 
         Ok(result_data)
@@ -297,6 +304,24 @@ impl ResultData {
         let missions = utils::read_u32(reader)?;
 
         self.completed_missions = unpack_missions(missions);
+
+        Ok(())
+    }
+
+    /// Read and set the number of guests
+    fn set_guests<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let guests = utils::read_u32(reader)?;
+
+        self.guests = Some(guests);
+
+        Ok(())
+    }
+
+    /// Read and set the clock start in seconds.
+    fn set_clock_start<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let seconds = utils::read_u32(reader)?;
+
+        self.clock_start = Some(seconds);
 
         Ok(())
     }
