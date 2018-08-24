@@ -1,7 +1,9 @@
 #[macro_use]
 pub mod error;
+pub mod result_data;
 
 pub use self::error::{Error, Result};
+pub use self::result_data::ResultData;
 
 use std::io::Read;
 use utils;
@@ -21,6 +23,7 @@ pub struct Header {
     pub sniper_user_len: u8,
     pub spy_display_len: u8,
     pub sniper_display_len: u8,
+    pub result_data: ResultData,
     pub latency: f32,
     pub data_size: u32,
     pub spy_user_name: String,
@@ -81,7 +84,7 @@ impl Header {
 
         ensure!(
             version == 4 || version == 5,
-            Error::UnsupportedVersion(version)
+            Error::UnsupportedReplayVersion(version)
         );
 
         self.replay_version = version;
@@ -206,14 +209,7 @@ impl Header {
 
     /// Read and set the result data.
     fn set_result_data<R: Read>(&mut self, reader: &mut R) -> Result<()> {
-        // Just skip it for now
-        if self.replay_version == 4 {
-            let mut id = [0; 28];
-            reader.read_exact(&mut id)?;
-        } else {
-            let mut id = [0; 36];
-            reader.read_exact(&mut id)?;
-        }
+        self.result_data = ResultData::from_reader(reader)?;
 
         Ok(())
     }
@@ -339,7 +335,7 @@ mod tests {
         let validated = header.set_replay_version(&mut input);
 
         match validated {
-            Err(Error::UnsupportedVersion(3)) => assert!(true),
+            Err(Error::UnsupportedReplayVersion(3)) => assert!(true),
             _ => assert!(false),
         }
     }

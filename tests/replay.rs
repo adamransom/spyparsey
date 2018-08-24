@@ -27,6 +27,8 @@ fn valid_replay_v5() {
     assert_eq!(replay.header().sniper_user_name, "plastikqs");
     assert_eq!(replay.header().spy_display_name, None);
     assert_eq!(replay.header().sniper_display_name, None);
+    assert_eq!(replay.header().result_data.version, 2);
+    assert_eq!(replay.header().result_data.simple_rules, false);
 }
 
 #[test]
@@ -53,6 +55,8 @@ fn valid_replay_v4() {
     assert_eq!(replay.header().sniper_user_name, "plastikqs");
     assert_eq!(replay.header().spy_display_name, None);
     assert_eq!(replay.header().sniper_display_name, None);
+    assert_eq!(replay.header().result_data.version, 1);
+    assert_eq!(replay.header().result_data.simple_rules, true);
 }
 
 #[test]

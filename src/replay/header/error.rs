@@ -14,7 +14,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     Io(std::io::Error),
     InvalidIdentifier,
-    UnsupportedVersion(u32),
+    UnsupportedReplayVersion(u32),
+    UnsupportedResultVersion(u32),
     MissingSpyUsername,
     MissingSniperUsername,
     InvalidString(std::string::FromUtf8Error),
@@ -25,7 +26,10 @@ impl fmt::Display for Error {
         match self {
             Error::Io(err) => write!(f, "IO error ({})", err),
             Error::InvalidIdentifier => write!(f, "invalid identifier"),
-            Error::UnsupportedVersion(v) => write!(f, "unsupported version ({})", v),
+            Error::UnsupportedReplayVersion(v) => write!(f, "unsupported replay version ({})", v),
+            Error::UnsupportedResultVersion(v) => {
+                write!(f, "unsupported result data version ({})", v)
+            }
             Error::MissingSpyUsername => write!(f, "missing spy username"),
             Error::MissingSniperUsername => write!(f, "missing sniper username"),
             Error::InvalidString(err) => write!(f, "invalid UTF8 string ({})", err),
