@@ -1,4 +1,5 @@
 use replay::header::{Error, Result};
+use std::fmt;
 use std::io::Read;
 use utils;
 
@@ -32,6 +33,52 @@ impl Default for GameMode {
     }
 }
 
+/// The maps of SpyParty.
+#[derive(Debug, PartialEq)]
+pub enum Map {
+    Balcony,
+    Ballroom,
+    Courtyard,
+    Gallery,
+    HighRise,
+    Library,
+    Moderne,
+    Pub,
+    Terrace,
+    Veranda,
+    Unknown(u32),
+}
+
+impl Default for Map {
+    fn default() -> Map {
+        Map::Unknown(0)
+    }
+}
+
+impl fmt::Display for Map {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Map::Balcony => "Balcony",
+                Map::Ballroom => "Ballroom",
+                Map::Courtyard => "Courtyard",
+                Map::Gallery => "Gallery",
+                Map::HighRise => "High-Rise",
+                Map::Library => "Library",
+                Map::Moderne => "Moderne",
+                Map::Pub => "Pub",
+                Map::Terrace => "Terrace",
+                Map::Veranda => "Veranda",
+                Map::Unknown(_) => "Unknown",
+            }
+        )
+    }
+}
+/*
+ */
+
 #[derive(Debug, Default)]
 pub struct ResultData {
     /// The version of the result data.
@@ -52,6 +99,8 @@ pub struct ResultData {
     pub total_missions: u16,
     /// The mode of the game.
     pub game_mode: GameMode,
+    /// The map the game was played on.
+    pub map: Map,
 }
 
 /// The result data contained in the header of a replay.
@@ -65,13 +114,14 @@ impl ResultData {
         result_data.set_missions_required(reader)?;
         result_data.set_total_missions(reader)?;
         result_data.set_game_mode(reader)?;
+        result_data.set_map(reader)?;
 
         // Skip the rest
         if result_data.version == 1 {
-            let mut id = [0; 16];
+            let mut id = [0; 12];
             reader.read_exact(&mut id)?;
         } else {
-            let mut id = [0; 24];
+            let mut id = [0; 20];
             reader.read_exact(&mut id)?;
         }
 
@@ -157,6 +207,32 @@ impl ResultData {
             0x10 => GameMode::Pick,
             0x20 => GameMode::Any,
             _ => bail!(Error::InvalidGameMode(mode)),
+        };
+
+        Ok(())
+    }
+
+    /// Read and set the map.
+    ///
+    /// This is a bit lenient and allows invalid maps, simply because there are a few unknown
+    /// hashes floating around and I don't have all the replays available to test all the cases.
+    ///
+    /// Note: Currently we only handle new art maps properly.
+    fn set_map<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let map = utils::read_u32(reader)?;
+
+        self.map = match map {
+            0x1dbd8e41 => Map::Balcony,
+            0x5b121925 => Map::Ballroom,
+            0x9dc5bb5e => Map::Courtyard,
+            0x7173b8bf => Map::Gallery,
+            0x1a56c5a1 => Map::HighRise,
+            0x168f4f62 => Map::Library,
+            0x2e37f15b => Map::Moderne,
+            0x3b85fff3 => Map::Pub,
+            0x9032ce22 => Map::Terrace,
+            0x6f81a558 => Map::Veranda,
+            _ => Map::Unknown(map),
         };
 
         Ok(())

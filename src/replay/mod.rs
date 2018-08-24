@@ -1,7 +1,7 @@
 mod header;
 
 pub use self::header::Header;
-pub use self::header::{GameMode, GameResult};
+pub use self::header::{GameMode, GameResult, Map};
 
 use self::header::Result;
 use std::io::Read;
