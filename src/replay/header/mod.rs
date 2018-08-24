@@ -23,6 +23,10 @@ pub struct Header {
     pub sniper_display_len: u8,
     pub latency: f32,
     pub data_size: u32,
+    pub spy_user_name: String,
+    pub sniper_user_name: String,
+    pub spy_display_name: Option<String>,
+    pub sniper_display_name: Option<String>,
 }
 
 impl Header {
@@ -51,6 +55,10 @@ impl Header {
         header.set_result_data(reader)?;
         header.set_latency(reader)?;
         header.set_data_size(reader)?;
+        header.set_spy_user_name(reader)?;
+        header.set_sniper_user_name(reader)?;
+        header.set_spy_display_name(reader)?;
+        header.set_sniper_display_name(reader)?;
 
         Ok(header)
     }
@@ -148,18 +156,26 @@ impl Header {
     fn set_spy_user_len<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let len = utils::read_u8(reader)?;
 
-        self.spy_user_len = len;
+        if len > 0 {
+            self.spy_user_len = len;
 
-        Ok(())
+            Ok(())
+        } else {
+            Err(Error::MissingSpyUsername)
+        }
     }
 
     /// Read and set the sniper's username length.
     fn set_sniper_user_len<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let len = utils::read_u8(reader)?;
 
-        self.sniper_user_len = len;
+        if len > 0 {
+            self.sniper_user_len = len;
 
-        Ok(())
+            Ok(())
+        } else {
+            Err(Error::MissingSniperUsername)
+        }
     }
 
     /// Read and set the spy's display name length.
@@ -221,12 +237,67 @@ impl Header {
 
         Ok(())
     }
+
+    /// Read and set the spy's username.
+    ///
+    /// This assumes the name is a valid UTF8 string (which according to checker, it should be).
+    fn set_spy_user_name<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let mut buf = vec![0u8; self.spy_user_len as usize];
+        reader.read_exact(&mut buf)?;
+
+        self.spy_user_name = String::from_utf8(buf)?;
+
+        Ok(())
+    }
+
+    /// Read and set the sniper's username.
+    ///
+    /// This assumes the name is a valid UTF8 string (which according to checker, it should be).
+    fn set_sniper_user_name<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        let mut buf = vec![0u8; self.sniper_user_len as usize];
+        reader.read_exact(&mut buf)?;
+
+        self.sniper_user_name = String::from_utf8(buf)?;
+
+        Ok(())
+    }
+
+    /// Read and set the spy's display name.
+    ///
+    /// This assumes the name is a valid UTF8 string (which according to checker, it should be).
+    fn set_spy_display_name<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        if self.spy_display_len > 0 {
+            let mut buf = vec![0u8; self.spy_display_len as usize];
+            reader.read_exact(&mut buf)?;
+
+            self.spy_display_name = Some(String::from_utf8(buf)?);
+        } else {
+            self.spy_display_name = None;
+        }
+
+        Ok(())
+    }
+
+    /// Read and set the sniper's display name.
+    ///
+    /// This assumes the name is a valid UTF8 string (which according to checker, it should be).
+    fn set_sniper_display_name<R: Read>(&mut self, reader: &mut R) -> Result<()> {
+        if self.sniper_display_len > 0 {
+            let mut buf = vec![0u8; self.sniper_display_len as usize];
+            reader.read_exact(&mut buf)?;
+
+            self.sniper_display_name = Some(String::from_utf8(buf)?);
+        } else {
+            self.sniper_display_name = None;
+        }
+
+        Ok(())
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Error;
-    use super::Header;
+    use super::*;
 
     #[test]
     fn valid_identifier() {
@@ -269,6 +340,142 @@ mod tests {
 
         match validated {
             Err(Error::UnsupportedVersion(3)) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn missing_spy_user_name() {
+        let mut input: &[u8] = &[0];
+        let mut header: Header = Default::default();
+        let validated = header.set_spy_user_len(&mut input);
+
+        match validated {
+            Err(Error::MissingSpyUsername) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn missing_sniper_user_name() {
+        let mut input: &[u8] = &[0];
+        let mut header: Header = Default::default();
+        let validated = header.set_sniper_user_len(&mut input);
+
+        match validated {
+            Err(Error::MissingSniperUsername) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn valid_spy_user_name() {
+        let mut input: &[u8] = b"adam";
+        let mut header: Header = Default::default();
+        header.spy_user_len = input.len() as u8;
+        header.set_spy_user_name(&mut input).unwrap();
+
+        assert_eq!(header.spy_user_name, "adam");
+    }
+
+    #[test]
+    fn valid_sniper_user_name() {
+        let mut input: &[u8] = b"adam";
+        let mut header: Header = Default::default();
+        header.sniper_user_len = input.len() as u8;
+        header.set_sniper_user_name(&mut input).unwrap();
+
+        assert_eq!(header.sniper_user_name, "adam");
+    }
+
+    #[test]
+    fn invalid_spy_user_name() {
+        let mut input: &[u8] = b"Hello \xF0\x90\x80World";
+        let mut header: Header = Default::default();
+        header.spy_user_len = input.len() as u8;
+        let validated = header.set_spy_user_name(&mut input);
+
+        match validated {
+            Err(Error::InvalidString(_)) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn invalid_sniper_user_name() {
+        let mut input: &[u8] = b"Hello \xF0\x90\x80World";
+        let mut header: Header = Default::default();
+        header.sniper_user_len = input.len() as u8;
+        let validated = header.set_sniper_user_name(&mut input);
+
+        match validated {
+            Err(Error::InvalidString(_)) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn has_spy_display_name() {
+        let mut input: &[u8] = b"adam";
+        let mut header: Header = Default::default();
+        header.spy_display_len = 4;
+        header.set_spy_display_name(&mut input).unwrap();
+
+        assert_eq!(header.spy_display_name, Some("adam".to_string()));
+    }
+
+    #[test]
+    fn no_spy_display_name() {
+        let mut input: &[u8] = &[];
+        let mut header: Header = Default::default();
+        header.spy_display_len = 0;
+        header.set_spy_display_name(&mut input).unwrap();
+
+        assert_eq!(header.spy_display_name, None);
+    }
+
+    #[test]
+    fn invalid_spy_display_name() {
+        let mut input: &[u8] = b"Hello \xF0\x90\x80World";
+        let mut header: Header = Default::default();
+        header.spy_display_len = input.len() as u8;
+        let validated = header.set_spy_display_name(&mut input);
+
+        match validated {
+            Err(Error::InvalidString(_)) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn has_sniper_display_name() {
+        let mut input: &[u8] = b"adam";
+        let mut header: Header = Default::default();
+        header.sniper_display_len = 4;
+        header.set_sniper_display_name(&mut input).unwrap();
+
+        assert_eq!(header.sniper_display_name, Some("adam".to_string()));
+    }
+
+    #[test]
+    fn no_sniper_display_name() {
+        let mut input: &[u8] = &[];
+        let mut header: Header = Default::default();
+        header.sniper_display_len = 0;
+        header.set_sniper_display_name(&mut input).unwrap();
+
+        assert_eq!(header.sniper_display_name, None);
+    }
+
+    #[test]
+    fn invalid_sniper_display_name() {
+        let mut input: &[u8] = b"Hello \xF0\x90\x80World";
+        let mut header: Header = Default::default();
+        header.sniper_display_len = input.len() as u8;
+        let validated = header.set_sniper_display_name(&mut input);
+
+        match validated {
+            Err(Error::InvalidString(_)) => assert!(true),
             _ => assert!(false),
         }
     }
