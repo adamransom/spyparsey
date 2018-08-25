@@ -5,7 +5,10 @@ extern crate walkdir;
 #[macro_use]
 extern crate clap;
 
+mod filters;
+
 use clap::{App, ArgMatches};
+use filters::*;
 use spyparty::Replay;
 use std::fs::File;
 use std::io::BufReader;
@@ -49,7 +52,7 @@ fn run() -> Result<()> {
     let mut total = 0;
 
     // It's safe to unwrap here as INPUT is required
-    for path in matches.values_of("INPUT").unwrap() {
+    for path in matches.values_of("paths").unwrap() {
         for entry in WalkDir::new(path) {
             // Ignore failed file reads
             if let Ok(entry) = entry {
@@ -86,14 +89,14 @@ fn parse(path: &Path, matches: &ArgMatches) -> Result<bool> {
     Ok(false)
 }
 
+macro_rules! register_filters {
+    ($filters:ident, $($filter:ident),*) => {
+        let $filters: &[&Filter] = &[$(&$filter {}),*];
+    };
+}
+
 fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
-    if let Some(mut players) = matches.values_of("player") {
-        return Ok(players.any(|player| replay.has_name(player)));
-    }
+    register_filters!(filters, Players, Pair);
 
-    if let Some(mut players) = matches.values_of("pair") {
-        return Ok(players.all(|player| replay.has_name(player)));
-    }
-
-    Ok(true)
+    Ok(filters.iter().all(|f| f.filter(replay, matches)))
 }
