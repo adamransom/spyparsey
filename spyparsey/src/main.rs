@@ -5,10 +5,11 @@ extern crate walkdir;
 #[macro_use]
 extern crate clap;
 
-use clap::App;
+use clap::{App, ArgMatches};
 use spyparty::Replay;
 use std::fs::File;
 use std::io::BufReader;
+use std::path::Path;
 use walkdir::WalkDir;
 
 mod errors {
@@ -54,12 +55,9 @@ fn run() -> Result<()> {
             if let Ok(entry) = entry {
                 if let Some(ext) = entry.path().extension() {
                     if ext == "replay" {
-                        // Ignore failed file reads
-                        if let Ok(mut file) = File::open(entry.path()) {
-                            let mut reader = BufReader::new(file);
-                            if let Ok(_replay) = Replay::from_reader(&mut reader) {
-                                parsed += 1;
-                            }
+                        // We have a possible replay, let's parse it!
+                        if parse(entry.path(), &matches)? {
+                            parsed += 1;
                         }
 
                         total += 1;
@@ -72,4 +70,26 @@ fn run() -> Result<()> {
     println!("Parsed {} out of {} replays!", parsed, total);
 
     Ok(())
+}
+
+fn parse(path: &Path, matches: &ArgMatches) -> Result<bool> {
+    // Ignore failed file reads
+    if let Ok(file) = File::open(path) {
+        let mut reader = BufReader::new(file);
+        // Ignore failed parses
+        if let Ok(replay) = Replay::from_reader(&mut reader) {
+            // We handle things in 3 steps: filter, aggregate and ouput
+            return filter(&replay, matches).chain_err(|| "failed to apply filter");
+        }
+    }
+
+    Ok(false)
+}
+
+fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
+    if let Some(mut players) = matches.values_of("player") {
+        return Ok(players.any(|player| replay.has_name(player)));
+    }
+
+    Ok(true)
 }

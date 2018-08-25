@@ -3,8 +3,18 @@ version: "1.0"
 author: Adam Ransom
 about: Parses and queries a collection of SpyParty replays
 args:
+    - player:
+        short: p
+        long: player
+        help: Filters based on players' names (either spy or sniper)
+        long_help:
+            Filters based on players' names (either spy or sniper). This uses OR matching, so if you
+            use multiple player names it finds games with ANY of the players, not ALL of the players.
+        value_name: NAME
+        takes_value: true
+        multiple: true
+        number_of_values: 1
     - INPUT:
         help: Sets the list of paths to look for replays (can be directories or single replays)
         required: true
-        index: 1
         multiple: true
