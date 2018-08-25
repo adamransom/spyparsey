@@ -2,12 +2,14 @@ extern crate spyparty;
 #[macro_use]
 extern crate error_chain;
 extern crate walkdir;
+#[macro_use]
+extern crate clap;
 
+use clap::App;
 use spyparty::Replay;
-use std::env;
 use std::fs::File;
 use std::io::BufReader;
-use walkdir::{DirEntry, WalkDir};
+use walkdir::WalkDir;
 
 mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
@@ -38,26 +40,30 @@ fn main() {
     }
 }
 
-
 fn run() -> Result<()> {
-    let mut args: Vec<String> = env::args().collect();
+    let yaml = load_yaml!("cli.yml");
+    let matches = App::from_yaml(yaml).get_matches();
+
     let mut parsed = 0;
     let mut total = 0;
 
-    for entry in WalkDir::new(&args[1]).min_depth(1) {
-        // Ignore failed file reads
-        if let Ok(entry) = entry {
-            if let Some(ext) = entry.path().extension() {
-                if ext == "replay" {
-                    // Ignore failed file reads
-                    if let Ok(mut file) = File::open(entry.path()) {
-                        let mut reader = BufReader::new(file);
-                        if let Ok(replay) = Replay::from_reader(&mut reader) {
-                            parsed += 1;
+    // It's safe to unwrap here as INPUT is required
+    for path in matches.values_of("INPUT").unwrap() {
+        for entry in WalkDir::new(path) {
+            // Ignore failed file reads
+            if let Ok(entry) = entry {
+                if let Some(ext) = entry.path().extension() {
+                    if ext == "replay" {
+                        // Ignore failed file reads
+                        if let Ok(mut file) = File::open(entry.path()) {
+                            let mut reader = BufReader::new(file);
+                            if let Ok(_replay) = Replay::from_reader(&mut reader) {
+                                parsed += 1;
+                            }
                         }
-                    }
 
-                    total += 1;
+                        total += 1;
+                    }
                 }
             }
         }

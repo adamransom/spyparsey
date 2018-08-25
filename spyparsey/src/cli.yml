@@ -1,0 +1,10 @@
+name: spyparsey
+version: "1.0"
+author: Adam Ransom
+about: Parses and queries a collection of SpyParty replays
+args:
+    - INPUT:
+        help: Sets the list of paths to look for replays (can be directories or single replays)
+        required: true
+        index: 1
+        multiple: true
