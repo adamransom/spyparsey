@@ -21,6 +21,7 @@ pub enum Error {
     InvalidString(std::string::FromUtf8Error),
     InvalidGameResult(u32),
     InvalidGameMode(u32),
+    UnknownMap(String),
 }
 
 impl fmt::Display for Error {
@@ -37,6 +38,7 @@ impl fmt::Display for Error {
             Error::InvalidString(err) => write!(f, "invalid UTF8 string ({})", err),
             Error::InvalidGameResult(result) => write!(f, "invalid game result ({})", result),
             Error::InvalidGameMode(mode) => write!(f, "invalid game mode ({})", mode),
+            Error::UnknownMap(map) => write!(f, "unknown map ({})", map),
         }
     }
 }

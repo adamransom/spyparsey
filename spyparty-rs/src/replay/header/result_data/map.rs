@@ -1,3 +1,5 @@
+use replay::header::{Error, Result};
+use std::convert::TryFrom;
 use std::fmt;
 
 /// The maps of SpyParty.
@@ -62,6 +64,28 @@ impl From<u32> for Map {
     }
 }
 
+impl<'a> TryFrom<&'a str> for Map {
+    type Error = Error;
+
+    fn try_from(string: &'a str) -> Result<Self> {
+        let string = string.to_ascii_lowercase();
+
+        Ok(match string.as_ref() {
+            "balcony" => Map::Balcony,
+            "ballroom" => Map::Ballroom,
+            "courtyard" => Map::Courtyard,
+            "gallery" => Map::Gallery,
+            "highrise" | "high-rise" => Map::HighRise,
+            "library" => Map::Library,
+            "moderne" => Map::Moderne,
+            "pub" => Map::Pub,
+            "terrace" => Map::Terrace,
+            "veranda" => Map::Veranda,
+            _ => bail!(Error::UnknownMap(string)),
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -69,13 +93,35 @@ mod tests {
 
     #[test]
     fn known_map() {
-        let result: Map = 0x1dbd8e41.try_into().unwrap();
+        let result: Map = 0x1dbd8e41.into();
         assert_eq!(result, Map::Balcony);
     }
 
     #[test]
     fn unknown_map() {
-        let result: Map = 1u32.try_into().unwrap();
+        let result: Map = 1u32.into();
         assert_eq!(result, Map::Unknown(1));
+    }
+
+    #[test]
+    fn string_into_known_map() {
+        let result: Map = "pub".try_into().unwrap();
+        assert_eq!(result, Map::Pub);
+    }
+
+    #[test]
+    fn string_into_known_map_ci() {
+        let result: Map = "BallRoom".try_into().unwrap();
+        assert_eq!(result, Map::Ballroom);
+    }
+
+    #[test]
+    fn string_into_unknown_map() {
+        let result: Result<Map> = "unknown".try_into();
+
+        match result {
+            Err(Error::UnknownMap(map)) => assert!(map == "unknown"),
+            _ => assert!(false),
+        }
     }
 }
