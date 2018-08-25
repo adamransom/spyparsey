@@ -10,10 +10,20 @@ args:
         long_help:
             Filters based on players' names (either spy or sniper). This uses OR matching, so if you
             use multiple player names it finds games with ANY of the players, not ALL of the players.
+            If you want find the games where two players have played together, use the --pair option.
         value_name: NAME
         takes_value: true
         multiple: true
         number_of_values: 1
+        conflicts_with: pair
+    - pair:
+        long: pair
+        help: Filters based on a pair of players who have played together
+        value_name: NAMES
+        takes_value: true
+        multiple: true
+        number_of_values: 2
+        conflicts_with: player
     - INPUT:
         help: Sets the list of paths to look for replays (can be directories or single replays)
         required: true

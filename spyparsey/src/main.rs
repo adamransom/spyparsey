@@ -91,5 +91,9 @@ fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
         return Ok(players.any(|player| replay.has_name(player)));
     }
 
+    if let Some(mut players) = matches.values_of("pair") {
+        return Ok(players.all(|player| replay.has_name(player)));
+    }
+
     Ok(true)
 }
