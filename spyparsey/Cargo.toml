@@ -5,3 +5,5 @@ authors = ["Adam Ransom"]
 
 [dependencies]
 spyparty = { path = "../spyparty-rs" }
+error-chain = "0.12.0"
+walkdir = "2"
