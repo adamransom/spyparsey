@@ -1,3 +1,5 @@
+#![feature(try_from)]
+
 extern crate spyparty;
 #[macro_use]
 extern crate error_chain;
@@ -96,7 +98,7 @@ macro_rules! register_filters {
 }
 
 fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
-    register_filters!(filters, Players, Pair);
+    register_filters!(filters, Players, Pair, Maps);
 
     Ok(filters.iter().all(|f| f.filter(replay, matches)))
 }

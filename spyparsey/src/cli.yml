@@ -23,6 +23,13 @@ args:
         number_of_values: 2
         takes_value: true
         value_name: NAMES
+    - maps:
+        long: maps
+        help: Filters based maps
+        aliases: map
+        multiple: true
+        takes_value: true
+        value_name: MAPS
     - paths:
         long: paths
         help: Sets the list of paths to look for replays (can be directories or single replays)
