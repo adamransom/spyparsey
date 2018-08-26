@@ -23,12 +23,24 @@ impl Replay {
     }
 
     pub fn has_player(&self, name: &str) -> bool {
-        if self.header.spy_user_name == name || self.header.sniper_user_name == name {
+        self.has_spy(name) || self.has_sniper(name)
+    }
+
+    pub fn has_spy(&self, name: &str) -> bool {
+        if self.header.spy_user_name == name {
             return true;
         }
 
         if let Some(ref display_name) = self.header.spy_display_name {
             return display_name == name;
+        }
+
+        false
+    }
+
+    pub fn has_sniper(&self, name: &str) -> bool {
+        if self.header.sniper_user_name == name {
+            return true;
         }
 
         if let Some(ref display_name) = self.header.sniper_display_name {
@@ -73,5 +85,53 @@ mod tests {
         replay.header.sniper_display_name = Some("test".to_string());
 
         assert!(replay.has_player("test"));
+    }
+
+    #[test]
+    fn has_spy_user_name() {
+        let mut replay: Replay = Default::default();
+        replay.header.spy_user_name = "test".to_string();
+
+        assert!(replay.has_spy("test"));
+    }
+
+    #[test]
+    fn has_spy_display_name() {
+        let mut replay: Replay = Default::default();
+        replay.header.spy_display_name = Some("test".to_string());
+
+        assert!(replay.has_spy("test"));
+    }
+
+    #[test]
+    fn has_spy_not_sniper() {
+        let mut replay: Replay = Default::default();
+        replay.header.sniper_display_name = Some("test".to_string());
+
+        assert!(!replay.has_spy("test"));
+    }
+
+    #[test]
+    fn has_sniper_user_name() {
+        let mut replay: Replay = Default::default();
+        replay.header.sniper_user_name = "test".to_string();
+
+        assert!(replay.has_sniper("test"));
+    }
+
+    #[test]
+    fn has_sniper_display_name() {
+        let mut replay: Replay = Default::default();
+        replay.header.sniper_display_name = Some("test".to_string());
+
+        assert!(replay.has_sniper("test"));
+    }
+
+    #[test]
+    fn has_sniper_not_spy() {
+        let mut replay: Replay = Default::default();
+        replay.header.spy_display_name = Some("test".to_string());
+
+        assert!(!replay.has_sniper("test"));
     }
 }
