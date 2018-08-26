@@ -7,7 +7,7 @@ pub struct Players {}
 
 impl Players {
     fn predicate(arg: &str, replay: &Replay) -> bool {
-        replay.has_name(arg)
+        replay.has_player(arg)
     }
 }
 impl Filter for Players {

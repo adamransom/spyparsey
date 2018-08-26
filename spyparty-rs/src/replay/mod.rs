@@ -22,7 +22,7 @@ impl Replay {
         Ok(Replay { header })
     }
 
-    pub fn has_name(&self, name: &str) -> bool {
+    pub fn has_player(&self, name: &str) -> bool {
         if self.header.spy_user_name == name || self.header.sniper_user_name == name {
             return true;
         }
@@ -44,34 +44,34 @@ mod tests {
     use super::*;
 
     #[test]
-    fn has_name_spy_user_name() {
+    fn has_player_spy_user_name() {
         let mut replay: Replay = Default::default();
         replay.header.spy_user_name = "test".to_string();
 
-        assert!(replay.has_name("test"));
+        assert!(replay.has_player("test"));
     }
 
     #[test]
-    fn has_name_spy_display_name() {
+    fn has_player_spy_display_name() {
         let mut replay: Replay = Default::default();
         replay.header.spy_display_name = Some("test".to_string());
 
-        assert!(replay.has_name("test"));
+        assert!(replay.has_player("test"));
     }
 
     #[test]
-    fn has_name_sniper_user_name() {
+    fn has_player_sniper_user_name() {
         let mut replay: Replay = Default::default();
         replay.header.sniper_user_name = "test".to_string();
 
-        assert!(replay.has_name("test"));
+        assert!(replay.has_player("test"));
     }
 
     #[test]
-    fn has_name_sniper_display_name() {
+    fn has_player_sniper_display_name() {
         let mut replay: Replay = Default::default();
         replay.header.sniper_display_name = Some("test".to_string());
 
-        assert!(replay.has_name("test"));
+        assert!(replay.has_player("test"));
     }
 }
