@@ -44,6 +44,14 @@ args:
         multiple: true
         takes_value: true
         value_name: NAMES
+    - results:
+        long: results
+        help: Filters based on the result of the game
+        aliases: result
+        multiple: true
+        possible_values: ["missionswin", "spyshot", "civilianshot", "spytimeout", "unfinished"]
+        takes_value: true
+        value_name: RESULTS
     - paths:
         long: paths
         help: Sets the list of paths to look for replays (can be directories or single replays)
