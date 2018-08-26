@@ -22,6 +22,7 @@ pub enum Error {
     InvalidGameResult(u32),
     InvalidGameMode(u32),
     UnknownMap(String),
+    UnknownGameResult(String),
 }
 
 impl fmt::Display for Error {
@@ -39,6 +40,7 @@ impl fmt::Display for Error {
             Error::InvalidGameResult(result) => write!(f, "invalid game result ({})", result),
             Error::InvalidGameMode(mode) => write!(f, "invalid game mode ({})", mode),
             Error::UnknownMap(map) => write!(f, "unknown map ({})", map),
+            Error::UnknownGameResult(map) => write!(f, "unknown game result ({})", map),
         }
     }
 }

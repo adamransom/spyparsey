@@ -32,6 +32,23 @@ impl TryFrom<u32> for GameResult {
     }
 }
 
+impl<'a> TryFrom<&'a str> for GameResult {
+    type Error = Error;
+
+    fn try_from(string: &'a str) -> Result<Self> {
+        let string = string.to_ascii_lowercase().replace(" ", "");
+
+        Ok(match string.as_ref() {
+            "missionswin" => GameResult::MissionsWin,
+            "timeout" => GameResult::SpyTimeout,
+            "spyshot" => GameResult::SpyShot,
+            "civilianshot" => GameResult::CivilianShot,
+            "inprogress" | "unfinished" => GameResult::InProgress,
+            _ => bail!(Error::UnknownGameResult(string)),
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -49,6 +66,22 @@ mod tests {
 
         match validated {
             Err(Error::InvalidGameResult(5)) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn string_into_valid_game_result() {
+        let result: GameResult = "timeout".try_into().unwrap();
+        assert_eq!(result, GameResult::SpyTimeout);
+    }
+
+    #[test]
+    fn string_into_invalid_game_result() {
+        let validated: Result<GameResult> = "nope".try_into();
+
+        match validated {
+            Err(Error::UnknownGameResult(result)) => assert!(result == "nope"),
             _ => assert!(false),
         }
     }
