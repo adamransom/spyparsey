@@ -98,7 +98,7 @@ macro_rules! register_filters {
 }
 
 fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
-    register_filters!(filters, Players, Pair, Maps, Spies, Snipers, Results);
+    register_filters!(filters, Players, Pair, Maps, Spies, Snipers, Results, SpyWin, SniperWin);
 
     Ok(filters.iter().all(|f| f.filter(replay, matches)))
 }

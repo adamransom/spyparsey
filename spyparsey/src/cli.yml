@@ -49,9 +49,15 @@ args:
         help: Filters based on the result of the game
         aliases: result
         multiple: true
-        possible_values: ["missionswin", "spyshot", "civilianshot", "spytimeout", "unfinished"]
+        possible_values: ["missionswin", "spyshot", "civilianshot", "timeout", "unfinished"]
         takes_value: true
         value_name: RESULTS
+    - spywin:
+        long: spywin
+        help: Filters games that end in a spy win
+    - sniperwin:
+        long: sniperwin
+        help: Filters games that end in a sniper win
     - paths:
         long: paths
         help: Sets the list of paths to look for replays (can be directories or single replays)
