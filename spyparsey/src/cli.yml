@@ -30,6 +30,20 @@ args:
         multiple: true
         takes_value: true
         value_name: MAPS
+    - spies:
+        long: spies
+        help: Filters based on spies' names
+        aliases: spy
+        multiple: true
+        takes_value: true
+        value_name: NAMES
+    - snipers:
+        long: snipers
+        help: Filters based on snipers' names
+        aliases: sniper
+        multiple: true
+        takes_value: true
+        value_name: NAMES
     - paths:
         long: paths
         help: Sets the list of paths to look for replays (can be directories or single replays)

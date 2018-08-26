@@ -34,10 +34,14 @@ macro_rules! basic_and {
     }
 }
 
-mod players;
-mod pair;
 mod maps;
+mod pair;
+mod players;
+mod snipers;
+mod spies;
 
-pub use self::players::Players;
-pub use self::pair::Pair;
 pub use self::maps::Maps;
+pub use self::pair::Pair;
+pub use self::players::Players;
+pub use self::snipers::Snipers;
+pub use self::spies::Spies;
