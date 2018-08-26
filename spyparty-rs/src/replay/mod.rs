@@ -22,10 +22,12 @@ impl Replay {
         Ok(Replay { header })
     }
 
+    /// Checks if the replay contains a particular player.
     pub fn has_player(&self, name: &str) -> bool {
         self.has_spy(name) || self.has_sniper(name)
     }
 
+    /// Checks if the spy in this replay is a particular player.
     pub fn has_spy(&self, name: &str) -> bool {
         if self.header.spy_user_name == name {
             return true;
@@ -38,6 +40,7 @@ impl Replay {
         false
     }
 
+    /// Checks if the sniper in this replay is a particular player.
     pub fn has_sniper(&self, name: &str) -> bool {
         if self.header.sniper_user_name == name {
             return true;
@@ -48,6 +51,18 @@ impl Replay {
         }
 
         false
+    }
+
+    /// Checks if the replay ends in a spy win.
+    pub fn is_spy_win(&self) -> bool {
+        self.header.result_data.game_result == GameResult::MissionsWin
+            || self.header.result_data.game_result == GameResult::CivilianShot
+    }
+
+    /// Checks if the replay ends in a sniper win.
+    pub fn is_sniper_win(&self) -> bool {
+        self.header.result_data.game_result == GameResult::SpyShot
+            || self.header.result_data.game_result == GameResult::SpyTimeout
     }
 }
 
@@ -133,5 +148,21 @@ mod tests {
         replay.header.spy_display_name = Some("test".to_string());
 
         assert!(!replay.has_sniper("test"));
+    }
+
+    #[test]
+    fn is_spy_win() {
+        let mut replay: Replay = Default::default();
+        replay.header.result_data.game_result = GameResult::MissionsWin;
+
+        assert!(replay.is_spy_win());
+    }
+
+    #[test]
+    fn is_sniper_win() {
+        let mut replay: Replay = Default::default();
+        replay.header.result_data.game_result = GameResult::SpyTimeout;
+
+        assert!(replay.is_sniper_win());
     }
 }
