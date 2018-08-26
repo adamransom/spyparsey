@@ -14,8 +14,10 @@ use filters::*;
 use spyparty::Replay;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
+
+static DEFAULT_REPLAYS_PATH: &str = "SpyParty/replays/";
 
 mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
@@ -30,15 +32,15 @@ fn main() {
         let stderr = &mut ::std::io::stderr();
         let errmsg = "Error writing to stderr";
 
-        writeln!(stderr, "error: {}", e).expect(errmsg);
-
-        for e in e.iter().skip(1) {
-            writeln!(stderr, "caused by: {}", e).expect(errmsg);
-        }
+        writeln!(stderr, "{}", e).expect(errmsg);
 
         // The backtrace is not always generated. Try to run this example
         // with `RUST_BACKTRACE=1`.
         if let Some(backtrace) = e.backtrace() {
+            for e in e.iter().skip(1) {
+                writeln!(stderr, "caused by: {}", e).expect(errmsg);
+            }
+
             writeln!(stderr, "backtrace: {:?}", backtrace).expect(errmsg);
         }
 
@@ -50,11 +52,44 @@ fn run() -> Result<()> {
     let yaml = load_yaml!("cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
 
+    if matches.is_present("paths") {
+        process_replays(matches.values_of("paths").unwrap(), &matches)
+    } else {
+        let default_path = get_default_path().chain_err(|| "Could not locate the default SpyParty replays directory. Consider using --path to specify a directory instead.")?;
+        process_replays(vec![default_path], &matches)
+    }
+}
+
+#[cfg(windows)]
+fn get_default_path() -> Result<PathBuf> {
+    if let Some(app_data) = std::env::var_os("LOCALAPPDATA") {
+        let mut path = PathBuf::from(app_data);
+        path.push(DEFAULT_REPLAYS_PATH);
+
+        if path.is_dir() {
+            Ok(path)
+        } else {
+            bail!("cannot find SpyParty replays directory")
+        }
+    } else {
+        bail!("could not find local application data");
+    }
+}
+
+#[cfg(not(windows))]
+fn get_default_path() -> Result<PathBuf> {
+    bail!("default directory searching only available on Windows");
+}
+
+fn process_replays<I, P>(paths: I, matches: &ArgMatches) -> Result<()>
+where
+    I: IntoIterator<Item = P>,
+    P: AsRef<Path>,
+{
     let mut parsed = 0;
     let mut total = 0;
 
-    // It's safe to unwrap here as "paths" is required
-    for path in matches.values_of("paths").unwrap() {
+    for path in paths {
         for entry in WalkDir::new(path) {
             // Ignore failed file reads
             if let Ok(entry) = entry {

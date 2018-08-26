@@ -63,5 +63,5 @@ args:
         help: Sets the list of paths to look for replays (can be directories or single replays)
         aliases: path
         multiple: true
-        required: true
+        takes_value: true
         value_name: PATHS
