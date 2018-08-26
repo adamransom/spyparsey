@@ -53,7 +53,7 @@ fn run() -> Result<()> {
     let mut parsed = 0;
     let mut total = 0;
 
-    // It's safe to unwrap here as INPUT is required
+    // It's safe to unwrap here as "paths" is required
     for path in matches.values_of("paths").unwrap() {
         for entry in WalkDir::new(path) {
             // Ignore failed file reads

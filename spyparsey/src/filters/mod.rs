@@ -1,11 +1,14 @@
 use clap::ArgMatches;
 use spyparty::Replay;
-use std::convert::TryInto;
 
+/// Trait to be used by filters on replays.
 pub trait Filter {
     fn filter(&self, replay: &Replay, matches: &ArgMatches) -> bool;
 }
 
+// Macros have to come before the separate filter modules!
+
+/// Macro to create a very simple OR-type filter.
 macro_rules! basic_or {
     ($arg:expr, $pred:path) => {
         fn filter(&self, replay: &Replay, matches: &ArgMatches) -> bool {
@@ -18,6 +21,7 @@ macro_rules! basic_or {
     }
 }
 
+/// Macro to create a very simple AND-type filter.
 macro_rules! basic_and {
     ($arg:expr, $pred:path) => {
         fn filter(&self, replay: &Replay, matches: &ArgMatches) -> bool {
@@ -30,39 +34,10 @@ macro_rules! basic_and {
     }
 }
 
-pub struct Players {}
+mod players;
+mod pair;
+mod maps;
 
-impl Players {
-    fn predicate(arg: &str, replay: &Replay) -> bool {
-        replay.has_name(arg)
-    }
-}
-impl Filter for Players {
-    basic_or!("players", Self::predicate);
-}
-
-pub struct Maps {}
-
-impl Maps {
-    fn predicate(arg: &str, replay: &Replay) -> bool {
-        if let Ok(map) = arg.try_into() {
-            replay.header.result_data.map == map
-        } else {
-            false
-        }
-    }
-}
-impl Filter for Maps {
-    basic_or!("maps", Self::predicate);
-}
-
-pub struct Pair {}
-
-impl Pair {
-    fn predicate(arg: &str, replay: &Replay) -> bool {
-        replay.has_name(arg)
-    }
-}
-impl Filter for Pair {
-    basic_and!("pair", Self::predicate);
-}
+pub use self::players::Players;
+pub use self::pair::Pair;
+pub use self::maps::Maps;
