@@ -24,23 +24,8 @@ impl TryFrom<u32> for GameMode {
 
     fn try_from(mode: u32) -> Result<Self> {
         let required = (mode & 0x000000ff) as u8;
-        let is_known = mode & 0xff000000 == 0;
-        let total = match mode & 0x00ffff00 {
-            0x00_00C0_00 => 3,
-            0x00_0100_00 => 4,
-            0x00_0140_00 => 5,
-            0x00_0180_00 => 6,
-            0x00_01C0_00 => 7,
-            0x00_0200_00 => 8,
-            _ => {
-                if is_known {
-                    // We don't care about total missions for the "Known" mode.
-                    0
-                } else {
-                    bail!(Error::InvalidGameMode(mode));
-                }
-            }
-        } as u16;
+        // Thanks to LtHummus for tbis trick :)
+        let total = ((mode & 0x0fffc00) >> 14) as u16;
 
         match mode & 0xff000000 {
             0x00_000000 => Ok(GameMode::Known(required)),
