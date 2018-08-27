@@ -20,7 +20,9 @@ pub struct ResultData {
     /// Currently only versions 1 and 2 are supported.
     pub version: u32,
     /// Whether or not this game was played with simple rules.
-    pub simple_rules: bool,
+    ///
+    /// This is optional because it's only available from replay version 4 onwards.
+    pub simple_rules: Option<bool>,
     /// The result of the game.
     pub game_result: GameResult,
     /// The mode of the game.
@@ -46,10 +48,14 @@ pub struct ResultData {
 /// The result data contained in the header of a replay.
 impl ResultData {
     /// Create a new header from a reader.
-    pub fn from_reader<R: Read>(reader: &mut R) -> Result<ResultData> {
+    pub fn from_reader<R: Read>(reader: &mut R, replay_version: u32) -> Result<ResultData> {
         let mut result_data: ResultData = Default::default();
 
-        result_data.set_flags(reader)?;
+        if replay_version > 3 {
+            result_data.set_flags(reader)?;
+        } else {
+            result_data.set_explicit_version();
+        }
         result_data.set_game_result(reader)?;
         result_data.set_game_mode(reader)?;
         result_data.set_map(reader)?;
@@ -64,6 +70,12 @@ impl ResultData {
         }
 
         Ok(result_data)
+    }
+
+    /// Set the version explicitly if the replay version is 3.
+    fn set_explicit_version(&mut self) {
+        self.version = 0;
+        self.simple_rules = None;
     }
 
     /// Read and set the result data flags.
@@ -81,7 +93,7 @@ impl ResultData {
         );
 
         self.version = version;
-        self.simple_rules = simple;
+        self.simple_rules = Some(simple);
 
         Ok(())
     }
@@ -175,7 +187,7 @@ mod tests {
         data.set_flags(&mut input).unwrap();
 
         assert_eq!(data.version, 1);
-        assert_eq!(data.simple_rules, false);
+        assert_eq!(data.simple_rules, Some(false));
     }
 
     #[test]
@@ -185,7 +197,7 @@ mod tests {
         data.set_flags(&mut input).unwrap();
 
         assert_eq!(data.version, 1);
-        assert_eq!(data.simple_rules, true);
+        assert_eq!(data.simple_rules, Some(true));
     }
 
     #[test]

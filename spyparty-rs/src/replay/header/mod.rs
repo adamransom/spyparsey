@@ -13,7 +13,7 @@ use utils;
 pub struct Header {
     /// The version of the replay.
     ///
-    /// Currently only versions 4 and 5 are supported.
+    /// Currently only versions 3, 4 and 5 are supported.
     pub replay_version: u32,
     /// The verion of the protocol.
     pub protocol_version: u32,
@@ -109,12 +109,12 @@ impl Header {
 
     /// Read and set the replay version.
     ///
-    /// Currently versions 4 and 5 are supported.
+    /// Currently versions 3, 4 and 5 are supported.
     fn set_replay_version<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let version = utils::read_u32(reader)?;
 
         ensure!(
-            version == 4 || version == 5,
+            version == 3 || version == 4 || version == 5,
             Error::UnsupportedReplayVersion(version)
         );
 
@@ -240,7 +240,7 @@ impl Header {
 
     /// Read and set the result data.
     fn set_result_data<R: Read>(&mut self, reader: &mut R) -> Result<()> {
-        self.result_data = ResultData::from_reader(reader)?;
+        self.result_data = ResultData::from_reader(reader, self.replay_version)?;
 
         Ok(())
     }
@@ -361,12 +361,12 @@ mod tests {
 
     #[test]
     fn unsupported_version() {
-        let mut input: &[u8] = &[3, 0, 0, 0];
+        let mut input: &[u8] = &[2, 0, 0, 0];
         let mut header: Header = Default::default();
         let validated = header.set_replay_version(&mut input);
 
         match validated {
-            Err(Error::UnsupportedReplayVersion(3)) => assert!(true),
+            Err(Error::UnsupportedReplayVersion(2)) => assert!(true),
             _ => assert!(false),
         }
     }
