@@ -68,9 +68,9 @@ impl<'a> TryFrom<&'a str> for Map {
     type Error = Error;
 
     fn try_from(string: &'a str) -> Result<Self> {
-        let string = string.to_ascii_lowercase();
+        let stripped = string.to_ascii_lowercase().replace(" ", "");
 
-        Ok(match string.as_ref() {
+        Ok(match stripped.as_ref() {
             "balcony" => Map::Balcony,
             "ballroom" => Map::Ballroom,
             "courtyard" => Map::Courtyard,
@@ -81,7 +81,7 @@ impl<'a> TryFrom<&'a str> for Map {
             "pub" => Map::Pub,
             "terrace" => Map::Terrace,
             "veranda" => Map::Veranda,
-            _ => bail!(Error::UnknownMap(string)),
+            _ => bail!(Error::UnknownMap(string.to_string())),
         })
     }
 }

@@ -36,15 +36,15 @@ impl<'a> TryFrom<&'a str> for GameResult {
     type Error = Error;
 
     fn try_from(string: &'a str) -> Result<Self> {
-        let string = string.to_ascii_lowercase().replace(" ", "");
+        let stripped = string.to_ascii_lowercase().replace(" ", "");
 
-        Ok(match string.as_ref() {
+        Ok(match stripped.as_ref() {
             "missionswin" => GameResult::MissionsWin,
             "timeout" => GameResult::SpyTimeout,
             "spyshot" => GameResult::SpyShot,
             "civilianshot" => GameResult::CivilianShot,
             "inprogress" | "unfinished" => GameResult::InProgress,
-            _ => bail!(Error::UnknownGameResult(string)),
+            _ => bail!(Error::UnknownGameResult(string.to_string())),
         })
     }
 }

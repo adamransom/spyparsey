@@ -3,6 +3,9 @@ name = "spyparty"
 version = "0.1.0"
 authors = ["Adam Ransom"]
 
+[dependencies]
+regex = "1"
+
 [dependencies.byteorder]
 version = "1"
 features = ["i128"]

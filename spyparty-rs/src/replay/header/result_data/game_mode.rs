@@ -1,3 +1,4 @@
+use regex::Regex;
 use replay::header::{Error, Result};
 use std::convert::TryFrom;
 
@@ -50,6 +51,40 @@ impl TryFrom<u32> for GameMode {
     }
 }
 
+impl<'a> TryFrom<&'a str> for GameMode {
+    type Error = Error;
+
+    fn try_from(string: &'a str) -> Result<Self> {
+        let stripped = string.to_ascii_lowercase().replace(" ", "");
+        // Matches 3 forms:
+        //    Known 4 of 4
+        //    Any 4/8
+        //    p3/5
+        let re = Regex::new(r"^(?P<mode>\w+)(?P<required>\d)(/|of)(?P<total>\d)$").unwrap();
+
+        if let Some(caps) = re.captures(&stripped) {
+            // Make sure all matches are present
+            if caps.len() == 5 {
+                let required: u8 = caps["required"]
+                    .parse()
+                    .map_err(|_| Error::UnknownGameMode(string.to_string()))?;
+                let total: u16 = caps["total"]
+                    .parse()
+                    .map_err(|_| Error::UnknownGameMode(string.to_string()))?;
+
+                return Ok(match &caps["mode"] {
+                    "any" | "a" => GameMode::Any(required, total),
+                    "pick" | "p" => GameMode::Pick(required, total),
+                    "known" | "k" => GameMode::Known(required),
+                    _ => bail!(Error::UnknownGameMode(string.to_string())),
+                });
+            }
+        }
+
+        Err(Error::UnknownGameMode(string.to_string()))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -81,5 +116,33 @@ mod tests {
             Err(Error::InvalidGameMode(0x30_000000)) => assert!(true),
             _ => assert!(false),
         }
+    }
+
+    #[test]
+    fn string_into_any_game_mode() {
+        let result: GameMode = "a4/8".try_into().unwrap();
+        assert_eq!(result, GameMode::Any(4, 8));
+    }
+
+    #[test]
+    fn string_into_any_game_mode_invalid() {
+        let validated: Result<GameMode> = "a4/85".try_into();
+
+        match validated {
+            Err(Error::UnknownGameMode(mode)) => assert!(mode == "a4/85"),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn string_into_pick_game_mode() {
+        let result: GameMode = "pick 3 of 7".try_into().unwrap();
+        assert_eq!(result, GameMode::Pick(3, 7));
+    }
+
+    #[test]
+    fn string_into_known_game_mode() {
+        let result: GameMode = "pick 5/5".try_into().unwrap();
+        assert_eq!(result, GameMode::Pick(5, 5));
     }
 }
