@@ -6,6 +6,9 @@ extern crate error_chain;
 extern crate walkdir;
 #[macro_use]
 extern crate clap;
+#[macro_use]
+extern crate log;
+extern crate stderrlog;
 
 mod filters;
 
@@ -51,6 +54,14 @@ fn main() {
 fn run() -> Result<()> {
     let yaml = load_yaml!("cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
+
+    // Start logging
+    let verbose = matches.occurrences_of("verbosity") as usize;
+    stderrlog::new()
+        .verbosity(verbose)
+        .color(stderrlog::ColorChoice::Never)
+        .init()
+        .chain_err(|| "Failed to start logging.")?;
 
     if matches.is_present("paths") {
         process_replays(matches.values_of("paths").unwrap(), &matches)
@@ -103,6 +114,11 @@ where
                         total += 1;
                     }
                 }
+            } else {
+                match entry.err().unwrap().path() {
+                    Some(path) => warn!("failed to read file '{}'", path.display()),
+                    None => warn!("failed to read file"),
+                }
             }
         }
     }
@@ -117,10 +133,17 @@ fn parse(path: &Path, matches: &ArgMatches) -> Result<bool> {
     if let Ok(file) = File::open(path) {
         let mut reader = BufReader::new(file);
         // Ignore failed parses
-        if let Ok(replay) = Replay::from_reader(&mut reader) {
-            // We handle things in 3 steps: filter, aggregate and ouput
-            return filter(&replay, matches).chain_err(|| "failed to apply filter");
+        match Replay::from_reader(&mut reader) {
+            Ok(replay) => {
+                // We handle things in 3 steps: filter, aggregate and ouput
+                return filter(&replay, matches).chain_err(|| "failed to apply filter");
+            }
+            Err(e) => {
+                warn!("failed to parse replay '{}' ({})", path.display(), e);
+            }
         }
+    } else {
+        warn!("failed to read file '{}'", path.display());
     }
 
     Ok(false)

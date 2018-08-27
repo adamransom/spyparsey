@@ -7,6 +7,8 @@ authors = ["Adam Ransom"]
 spyparty = { path = "../spyparty-rs" }
 error-chain = "0.12.0"
 walkdir = "2"
+log = "0.4"
+stderrlog = "0.4"
 
 [dependencies.clap]
 version = "2.32.0"

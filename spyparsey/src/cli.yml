@@ -85,3 +85,7 @@ args:
         multiple: true
         takes_value: true
         value_name: PATHS
+    - verbosity:
+        short: v
+        help: Sets the verbosity level for logging
+        multiple: true
