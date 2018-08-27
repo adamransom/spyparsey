@@ -58,6 +58,13 @@ args:
     - sniperwin:
         long: sniperwin
         help: Filters games that end in a sniper win
+    - modes:
+        long: modes
+        help: Filters games that are a specific game mode
+        aliases: mode
+        multiple: true
+        takes_value: true
+        value_name: MODES
     - paths:
         long: paths
         help: Sets the list of paths to look for replays (can be directories or single replays)

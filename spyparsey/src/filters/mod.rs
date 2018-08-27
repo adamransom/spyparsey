@@ -47,6 +47,7 @@ macro_rules! basic_presence {
     }
 }
 
+mod game_modes;
 mod maps;
 mod pair;
 mod players;
@@ -56,6 +57,7 @@ mod snipers;
 mod spies;
 mod spy_win;
 
+pub use self::game_modes::GameModes;
 pub use self::maps::Maps;
 pub use self::pair::Pair;
 pub use self::players::Players;
