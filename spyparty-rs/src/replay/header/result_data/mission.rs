@@ -1,3 +1,5 @@
+use replay::header::{Error, Result};
+use std::convert::TryFrom;
 use std::fmt;
 
 /// The missions the spy tries to complete.
@@ -29,6 +31,26 @@ impl fmt::Display for Mission {
                 Mission::TransferMicrofilm => "Transfer Microfilm",
             }
         )
+    }
+}
+
+impl<'a> TryFrom<&'a str> for Mission {
+    type Error = Error;
+
+    fn try_from(string: &'a str) -> Result<Self> {
+        let stripped = string.to_ascii_lowercase().replace(" ", "");
+
+        Ok(match stripped.as_ref() {
+            "bugambassador" | "bug" => Mission::BugAmbassador,
+            "contactdoubleagent" | "contactda" | "contact" | "bb" => Mission::ContactDoubleAgent,
+            "fingerprintambassador" | "fingerprint" | "fp" => Mission::FingerprintAmbassador,
+            "inspectstatues" | "inspect" => Mission::InspectStatues,
+            "purloinguestlist" | "purloin" => Mission::PurloinGuestList,
+            "seducetarget" | "seduce" => Mission::SeduceTarget,
+            "swapstatue" | "swap" | "paws" => Mission::SwapStatue,
+            "transfermicrofilm" | "transfermf" | "mf" => Mission::TransferMicrofilm,
+            _ => bail!(Error::UnknownMission(string.to_string())),
+        })
     }
 }
 
@@ -69,4 +91,26 @@ pub fn unpack_missions(data: u32) -> Vec<Mission> {
     }
 
     missions
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::convert::TryInto;
+
+    #[test]
+    fn string_into_mission() {
+        let result: Mission = "seduce".try_into().unwrap();
+        assert_eq!(result, Mission::SeduceTarget);
+    }
+
+    #[test]
+    fn string_into_invalid_mission() {
+        let validated: Result<Mission> = "nope".try_into();
+
+        match validated {
+            Err(Error::UnknownMission(mission)) => assert!(mission == "nope"),
+            _ => assert!(false),
+        }
+    }
 }

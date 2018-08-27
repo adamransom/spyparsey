@@ -24,6 +24,7 @@ pub enum Error {
     UnknownMap(String),
     UnknownGameResult(String),
     UnknownGameMode(String),
+    UnknownMission(String),
 }
 
 impl fmt::Display for Error {
@@ -43,6 +44,7 @@ impl fmt::Display for Error {
             Error::UnknownMap(map) => write!(f, "unknown map ({})", map),
             Error::UnknownGameResult(result) => write!(f, "unknown game result ({})", result),
             Error::UnknownGameMode(mode) => write!(f, "unknown game mode ({})", mode),
+            Error::UnknownMission(mission) => write!(f, "unknown mission ({})", mission),
         }
     }
 }
