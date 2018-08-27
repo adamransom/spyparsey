@@ -65,6 +65,19 @@ args:
         multiple: true
         takes_value: true
         value_name: MODES
+    - completed-missions:
+        long: completed-missions
+        help: Filters games that contain specific missions, ANY of which were completed
+        aliases: completed-mission
+        multiple: true
+        takes_value: true
+        value_name: MISSIONS
+    - completed-missions-all:
+        long: completed-missions-all
+        help: Filters games that contain specific missions, ALL of which were completed
+        multiple: true
+        takes_value: true
+        value_name: MISSIONS
     - paths:
         long: paths
         help: Sets the list of paths to look for replays (can be directories or single replays)

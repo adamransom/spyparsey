@@ -47,6 +47,8 @@ macro_rules! basic_presence {
     }
 }
 
+mod completed_missions;
+mod completed_missions_all;
 mod game_modes;
 mod maps;
 mod pair;
@@ -57,6 +59,8 @@ mod snipers;
 mod spies;
 mod spy_win;
 
+pub use self::completed_missions::CompletedMissions;
+pub use self::completed_missions_all::CompletedMissionsAll;
 pub use self::game_modes::GameModes;
 pub use self::maps::Maps;
 pub use self::pair::Pair;
