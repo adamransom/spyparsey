@@ -29,6 +29,11 @@ mod errors {
 
 use errors::*;
 
+struct MatchedReplay {
+    _replay: Replay,
+    path: String,
+}
+
 fn main() {
     if let Err(ref e) = run() {
         use std::io::Write;
@@ -99,6 +104,7 @@ where
 {
     let mut parsed = 0;
     let mut total = 0;
+    let mut replays: Vec<MatchedReplay> = Vec::new();
 
     for path in paths {
         for entry in WalkDir::new(path) {
@@ -107,8 +113,15 @@ where
                 if let Some(ext) = entry.path().extension() {
                     if ext == "replay" {
                         // We have a possible replay, let's parse it!
-                        if parse(entry.path(), &matches)? {
+                        if let Some(replay) = parse(entry.path()) {
                             parsed += 1;
+
+                            if filter(&replay, matches).chain_err(|| "failed to apply filter")? {
+                                replays.push(MatchedReplay {
+                                    _replay: replay,
+                                    path: entry.path().display().to_string(),
+                                });
+                            }
                         }
 
                         total += 1;
@@ -123,20 +136,23 @@ where
         }
     }
 
-    println!("Parsed {} out of {} replays!", parsed, total);
+    output(&replays, matches);
+
+    info!("Found {} replays", total);
+    info!("Parsed {} replays", parsed);
+    info!("Matched {} replays", replays.len());
 
     Ok(())
 }
 
-fn parse(path: &Path, matches: &ArgMatches) -> Result<bool> {
+fn parse(path: &Path) -> Option<Replay> {
     // Ignore failed file reads
     if let Ok(file) = File::open(path) {
         let mut reader = BufReader::new(file);
         // Ignore failed parses
         match Replay::from_reader(&mut reader) {
             Ok(replay) => {
-                // We handle things in 3 steps: filter, aggregate and ouput
-                return filter(&replay, matches).chain_err(|| "failed to apply filter");
+                return Some(replay);
             }
             Err(e) => {
                 warn!("failed to parse replay '{}' ({})", path.display(), e);
@@ -146,7 +162,7 @@ fn parse(path: &Path, matches: &ArgMatches) -> Result<bool> {
         warn!("failed to read file '{}'", path.display());
     }
 
-    Ok(false)
+    None
 }
 
 macro_rules! register_filters {
@@ -172,4 +188,14 @@ fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
     );
 
     Ok(filters.iter().all(|f| f.filter(replay, matches)))
+}
+
+fn output(replays: &Vec<MatchedReplay>, matches: &ArgMatches) {
+    if matches.is_present("count") {
+        println!("{}", replays.len())
+    } else if matches.is_present("show-paths") {
+        for replay in replays {
+            println!("{}", replay.path);
+        }
+    }
 }

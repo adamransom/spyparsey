@@ -89,3 +89,11 @@ args:
         short: v
         help: Sets the verbosity level for logging
         multiple: true
+    - count:
+        long: count
+        help: Outputs a count of the matched replays
+        conflicts_with: show-paths
+    - show-paths:
+        long: show-paths
+        help: Outputs a list of the paths of matched replays
+        conflicts_with: count
