@@ -20,8 +20,6 @@ use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
-static DEFAULT_REPLAYS_PATH: &str = "SpyParty/replays/";
-
 mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
     error_chain!{}
@@ -80,7 +78,8 @@ fn run() -> Result<()> {
 fn get_default_path() -> Result<PathBuf> {
     if let Some(app_data) = std::env::var_os("LOCALAPPDATA") {
         let mut path = PathBuf::from(app_data);
-        path.push(DEFAULT_REPLAYS_PATH);
+        path.push("SpyParty");
+        path.push("replays");
 
         if path.is_dir() {
             Ok(path)
