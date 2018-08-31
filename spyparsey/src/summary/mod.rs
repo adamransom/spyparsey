@@ -18,12 +18,14 @@ macro_rules! print_single {
 }
 
 mod map_stat_collection;
+mod mission_set_stat_collection;
 mod mission_stat_collection;
 mod mode_stat_collection;
 mod player_stat_collection;
 mod result_stat_collection;
 
 use self::map_stat_collection::MapStatCollection;
+use self::mission_set_stat_collection::MissionSetStatCollection;
 use self::mission_stat_collection::MissionStatCollection;
 use self::mode_stat_collection::ModeStatCollection;
 use self::player_stat_collection::PlayerStatCollection;
@@ -47,11 +49,18 @@ trait StatCollection {
 pub fn show(replays: &Vec<MatchedReplay>, matches: &ArgMatches) {
     let mut map_stats: MapStatCollection = Default::default();
     let mut mission_stats: MissionStatCollection = Default::default();
+    let mut mission_set_stats: MissionSetStatCollection = Default::default();
     let mut mode_stats: ModeStatCollection = Default::default();
     let mut result_stats: ResultStatCollection = Default::default();
     let mut player_stats: PlayerStatCollection = Default::default();
 
     let mut all_stats: Vec<&mut StatCollection> = Vec::new();
+
+    // Early return if no replays!
+    if replays.is_empty() {
+        println!("No replays found.");
+        return;
+    }
 
     // Show player stats if filtering on players
     if matches.is_present("pair")
@@ -69,6 +78,7 @@ pub fn show(replays: &Vec<MatchedReplay>, matches: &ArgMatches) {
 
     // Always show missions stats
     all_stats.push(&mut mission_stats);
+    all_stats.push(&mut mission_set_stats);
 
     // Show mode stats if not filtered by modes
     if !matches.is_present("modes") {
