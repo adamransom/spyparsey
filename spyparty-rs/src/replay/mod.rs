@@ -64,6 +64,19 @@ impl Replay {
         self.header.result_data.game_result == GameResult::SpyShot
             || self.header.result_data.game_result == GameResult::SpyTimeout
     }
+
+    /// Checks if the replay ends with a win for a particular player.
+    pub fn is_win_for(&self, name: &str) -> bool {
+        self.has_spy(name) && self.is_spy_win() || self.has_sniper(name) && self.is_sniper_win()
+    }
+
+    /// Checks if the replay ends with a loss for a particular player.
+    ///
+    /// This is not simply the inverse of `is_win_for` because replays can be in an unfinished
+    /// state.
+    pub fn is_loss_for(&self, name: &str) -> bool {
+        self.has_spy(name) && self.is_sniper_win() || self.has_sniper(name) && self.is_spy_win()
+    }
 }
 
 #[cfg(test)]
@@ -164,5 +177,23 @@ mod tests {
         replay.header.result_data.game_result = GameResult::SpyTimeout;
 
         assert!(replay.is_sniper_win());
+    }
+
+    #[test]
+    fn is_win_for_spy() {
+        let mut replay: Replay = Default::default();
+        replay.header.spy_user_name = "test".to_string();
+        replay.header.result_data.game_result = GameResult::MissionsWin;
+
+        assert!(replay.is_win_for("test"));
+    }
+
+    #[test]
+    fn is_win_for_sniper() {
+        let mut replay: Replay = Default::default();
+        replay.header.sniper_user_name = "test".to_string();
+        replay.header.result_data.game_result = GameResult::SpyShot;
+
+        assert!(replay.is_win_for("test"));
     }
 }
