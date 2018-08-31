@@ -15,6 +15,22 @@ pub enum Mission {
     TransferMicrofilm,
 }
 
+impl Mission {
+    /// Return the shorthand for a mission.
+    pub fn short_display(&self) -> &str {
+        match self {
+            Mission::BugAmbassador => "Bug",
+            Mission::ContactDoubleAgent => "BB",
+            Mission::FingerprintAmbassador => "Fingerprint",
+            Mission::InspectStatues => "Inspect",
+            Mission::PurloinGuestList => "Purloin",
+            Mission::SeduceTarget => "Seduce",
+            Mission::SwapStatue => "Swap",
+            Mission::TransferMicrofilm => "Transfer MF",
+        }
+    }
+}
+
 impl fmt::Display for Mission {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
