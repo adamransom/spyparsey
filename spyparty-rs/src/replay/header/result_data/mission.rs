@@ -16,6 +16,45 @@ pub enum Mission {
 }
 
 impl Mission {
+    /// Unpacks a bitfield of missions into a vector.
+    pub fn unpack_missions(data: u32) -> Vec<Mission> {
+        let mut missions: Vec<Mission> = Vec::new();
+
+        if data & (1 << 0) != 0 {
+            missions.push(Mission::BugAmbassador);
+        }
+
+        if data & (1 << 1) != 0 {
+            missions.push(Mission::ContactDoubleAgent);
+        }
+
+        if data & (1 << 2) != 0 {
+            missions.push(Mission::TransferMicrofilm);
+        }
+
+        if data & (1 << 3) != 0 {
+            missions.push(Mission::SwapStatue);
+        }
+
+        if data & (1 << 4) != 0 {
+            missions.push(Mission::InspectStatues);
+        }
+
+        if data & (1 << 5) != 0 {
+            missions.push(Mission::SeduceTarget);
+        }
+
+        if data & (1 << 6) != 0 {
+            missions.push(Mission::PurloinGuestList);
+        }
+
+        if data & (1 << 7) != 0 {
+            missions.push(Mission::FingerprintAmbassador);
+        }
+
+        missions
+    }
+
     /// Return the shorthand for a mission.
     pub fn short_display(&self) -> &str {
         match self {
@@ -68,45 +107,6 @@ impl<'a> TryFrom<&'a str> for Mission {
             _ => bail!(Error::UnknownMission(string.to_string())),
         })
     }
-}
-
-/// Unpacks a bitfield of missions into a vector.
-pub fn unpack_missions(data: u32) -> Vec<Mission> {
-    let mut missions: Vec<Mission> = Vec::new();
-
-    if data & (1 << 0) != 0 {
-        missions.push(Mission::BugAmbassador);
-    }
-
-    if data & (1 << 1) != 0 {
-        missions.push(Mission::ContactDoubleAgent);
-    }
-
-    if data & (1 << 2) != 0 {
-        missions.push(Mission::TransferMicrofilm);
-    }
-
-    if data & (1 << 3) != 0 {
-        missions.push(Mission::SwapStatue);
-    }
-
-    if data & (1 << 4) != 0 {
-        missions.push(Mission::InspectStatues);
-    }
-
-    if data & (1 << 5) != 0 {
-        missions.push(Mission::SeduceTarget);
-    }
-
-    if data & (1 << 6) != 0 {
-        missions.push(Mission::PurloinGuestList);
-    }
-
-    if data & (1 << 7) != 0 {
-        missions.push(Mission::FingerprintAmbassador);
-    }
-
-    missions
 }
 
 #[cfg(test)]

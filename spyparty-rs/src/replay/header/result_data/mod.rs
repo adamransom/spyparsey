@@ -35,6 +35,8 @@ pub struct ResultData {
     pub picked_missions: Vec<Mission>,
     /// The missions the spy completed.
     pub completed_missions: Vec<Mission>,
+    /// The missions the spy completed in raw numeric form.
+    pub completed_missions_raw: u32,
     /// The number of guests at the party.
     ///
     /// This is optional because it's only available from version 2 onwards.
@@ -134,7 +136,7 @@ impl ResultData {
     fn set_selected_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let missions = utils::read_u32(reader)?;
 
-        self.selected_missions = mission::unpack_missions(missions);
+        self.selected_missions = Mission::unpack_missions(missions);
 
         Ok(())
     }
@@ -143,7 +145,7 @@ impl ResultData {
     fn set_picked_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let missions = utils::read_u32(reader)?;
 
-        self.picked_missions = mission::unpack_missions(missions);
+        self.picked_missions = Mission::unpack_missions(missions);
 
         Ok(())
     }
@@ -152,7 +154,8 @@ impl ResultData {
     fn set_completed_missions<R: Read>(&mut self, reader: &mut R) -> Result<()> {
         let missions = utils::read_u32(reader)?;
 
-        self.completed_missions = mission::unpack_missions(missions);
+        self.completed_missions_raw = missions;
+        self.completed_missions = Mission::unpack_missions(missions);
 
         Ok(())
     }
