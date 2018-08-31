@@ -18,7 +18,7 @@ args:
     - pair:
         long: pair
         help: Filters based on a pair of players who have played together
-        conflicts_with: player
+        conflicts_with: players
         multiple: true
         number_of_values: 2
         takes_value: true
@@ -34,6 +34,7 @@ args:
         long: spies
         help: Filters based on spies' names
         aliases: spy
+        conflicts_with: ["players", "pair"]
         multiple: true
         takes_value: true
         value_name: NAMES
@@ -41,6 +42,7 @@ args:
         long: snipers
         help: Filters based on snipers' names
         aliases: sniper
+        conflicts_with: ["players", "pair"]
         multiple: true
         takes_value: true
         value_name: NAMES

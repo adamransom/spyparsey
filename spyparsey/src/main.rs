@@ -11,6 +11,7 @@ extern crate log;
 extern crate stderrlog;
 
 mod filters;
+mod summary;
 
 use clap::{App, ArgMatches};
 use filters::*;
@@ -27,8 +28,8 @@ mod errors {
 
 use errors::*;
 
-struct MatchedReplay {
-    _replay: Replay,
+pub struct MatchedReplay {
+    inner: Replay,
     path: String,
 }
 
@@ -96,6 +97,7 @@ fn get_default_path() -> Result<PathBuf> {
     bail!("default directory searching only available on Windows");
 }
 
+/// Steps recursively through a path and tries to parse and filter replays.
 fn process_replays<I, P>(paths: I, matches: &ArgMatches) -> Result<()>
 where
     I: IntoIterator<Item = P>,
@@ -117,7 +119,7 @@ where
 
                             if filter(&replay, matches).chain_err(|| "failed to apply filter")? {
                                 replays.push(MatchedReplay {
-                                    _replay: replay,
+                                    inner: replay,
                                     path: entry.path().display().to_string(),
                                 });
                             }
@@ -135,7 +137,7 @@ where
         }
     }
 
-    output(&replays, matches);
+    output(&replays, matches)?;
 
     info!("Found {} replays", total);
     info!("Parsed {} replays", parsed);
@@ -144,6 +146,7 @@ where
     Ok(())
 }
 
+/// Tries to parse a replay at a specific path.
 fn parse(path: &Path) -> Option<Replay> {
     // Ignore failed file reads
     if let Ok(file) = File::open(path) {
@@ -170,6 +173,7 @@ macro_rules! register_filters {
     };
 }
 
+/// Filters the replays based on various command line arguments.
 fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
     register_filters!(
         filters,
@@ -189,12 +193,17 @@ fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
     Ok(filters.iter().all(|f| f.filter(replay, matches)))
 }
 
-fn output(replays: &Vec<MatchedReplay>, matches: &ArgMatches) {
+/// Prints various representations of the filtered replays.
+fn output(replays: &Vec<MatchedReplay>, matches: &ArgMatches) -> Result<()> {
     if matches.is_present("count") {
-        println!("{}", replays.len())
+        println!("{}", replays.len());
     } else if matches.is_present("show-paths") {
         for replay in replays {
             println!("{}", replay.path);
         }
+    } else {
+        summary::show(replays, matches);
     }
+
+    Ok(())
 }
