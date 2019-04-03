@@ -46,7 +46,7 @@ trait StatCollection {
 /// Shows a summary of the filtered replays.
 ///
 /// What is shown is based on which filters were used when querying the replays.
-pub fn show(replays: &Vec<MatchedReplay>, matches: &ArgMatches) {
+pub fn show(replays: &[MatchedReplay], matches: &ArgMatches) {
     let mut map_stats: MapStatCollection = Default::default();
     let mut mission_stats: MissionStatCollection = Default::default();
     let mut mission_set_stats: MissionSetStatCollection = Default::default();

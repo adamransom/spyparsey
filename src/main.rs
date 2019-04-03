@@ -141,7 +141,7 @@ where
 
             matched_replay
         })
-        .collect();
+        .collect::<Vec<_>>();
 
     output(&replays, matches)?;
 
@@ -203,7 +203,7 @@ fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
 }
 
 /// Prints various representations of the filtered replays.
-fn output(replays: &Vec<MatchedReplay>, matches: &ArgMatches) -> Result<()> {
+fn output(replays: &[MatchedReplay], matches: &ArgMatches) -> Result<()> {
     if matches.is_present("count") {
         println!("{}", replays.len());
     } else if matches.is_present("show-paths") {
