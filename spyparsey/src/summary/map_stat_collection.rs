@@ -1,6 +1,6 @@
 use super::{increment, StatCollection};
 use clap::ArgMatches;
-use spyparty::replay::{Map, Replay};
+use spyparty::{Map, Replay};
 use std::collections::HashMap;
 
 /// A collection for keeping track of how many times each map was played.
@@ -13,6 +13,7 @@ pub struct MapStatCollection {
 impl StatCollection for MapStatCollection {
     fn aggregate(&mut self, replay: &Replay, _: &ArgMatches) {
         match replay.header.result_data.map {
+            Map::Aquarium => increment(&mut self.stats, "Aquarium"),
             Map::Balcony => increment(&mut self.stats, "Balcony"),
             Map::Ballroom => increment(&mut self.stats, "Ballroom"),
             Map::Courtyard => increment(&mut self.stats, "Courtyard"),
@@ -21,6 +22,7 @@ impl StatCollection for MapStatCollection {
             Map::Library => increment(&mut self.stats, "Library"),
             Map::Moderne => increment(&mut self.stats, "Moderne"),
             Map::Pub => increment(&mut self.stats, "Pub"),
+            Map::Teien => increment(&mut self.stats, "Teien"),
             Map::Terrace => increment(&mut self.stats, "Terrace"),
             Map::Veranda => increment(&mut self.stats, "Veranda"),
             _ => {}

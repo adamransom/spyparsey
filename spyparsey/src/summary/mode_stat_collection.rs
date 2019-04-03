@@ -1,6 +1,6 @@
 use super::{increment, StatCollection};
 use clap::ArgMatches;
-use spyparty::replay::{GameMode, Replay};
+use spyparty::{GameMode, Replay};
 use std::collections::HashMap;
 
 /// A collection for keeping track of how many times each game mode was played.

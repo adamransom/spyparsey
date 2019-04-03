@@ -1,6 +1,6 @@
 use super::{increment, StatCollection};
 use clap::ArgMatches;
-use spyparty::replay::{GameResult, Replay};
+use spyparty::{GameResult, Replay};
 use std::collections::HashMap;
 
 /// A collection for keeping track of how many times each game ended in a particular result.

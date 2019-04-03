@@ -1,6 +1,5 @@
 [workspace]
 
 members = [
-  "spyparty-rs",
   "spyparsey",
 ]

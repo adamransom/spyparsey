@@ -1,6 +1,6 @@
 use super::StatCollection;
 use clap::ArgMatches;
-use spyparty::replay::{GameMode, Mission, Replay};
+use spyparty::{GameMode, Mission, Replay};
 use std::collections::HashMap;
 
 /// A collection for keeping track of how many times a set of missions counts as a completion.

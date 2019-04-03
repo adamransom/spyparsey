@@ -15,7 +15,7 @@ mod summary;
 
 use clap::{App, ArgMatches};
 use filters::*;
-use spyparty::Replay;
+use spyparty::{Replay, Map};
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
@@ -154,6 +154,9 @@ fn parse(path: &Path) -> Option<Replay> {
         // Ignore failed parses
         match Replay::from_reader(&mut reader) {
             Ok(replay) => {
+                if let Map::Unknown(x) = replay.header.result_data.map {
+                    warn!("unrecognised map in '{}' ({})", path.display(), x);
+                }
                 return Some(replay);
             }
             Err(e) => {

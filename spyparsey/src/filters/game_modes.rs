@@ -1,7 +1,6 @@
 use clap::ArgMatches;
 use filters::Filter;
-use spyparty::replay::GameMode;
-use spyparty::Replay;
+use spyparty::{GameMode, Replay};
 use std::convert::TryInto;
 
 /// Filters replays that are specific game modes.
