@@ -8,10 +8,12 @@ use crate::filters::*;
 use clap::load_yaml;
 use clap::{App, ArgMatches};
 use log::{info, warn};
+use rayon::prelude::*;
 use spyparty::{Map, Replay};
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicIsize, Ordering};
 use walkdir::WalkDir;
 
 mod errors {
@@ -96,9 +98,9 @@ where
     I: IntoIterator<Item = P>,
     P: AsRef<Path>,
 {
-    let mut parsed = 0;
-    let mut total = 0;
-    let mut replays: Vec<MatchedReplay> = Vec::new();
+    let parsed = AtomicIsize::new(0);
+    let total = AtomicIsize::new(0);
+    let mut replay_paths = vec![];
 
     for path in paths {
         for entry in WalkDir::new(path) {
@@ -106,19 +108,7 @@ where
             if let Ok(entry) = entry {
                 if let Some(ext) = entry.path().extension() {
                     if ext == "replay" {
-                        // We have a possible replay, let's parse it!
-                        if let Some(replay) = parse(entry.path()) {
-                            parsed += 1;
-
-                            if filter(&replay, matches).chain_err(|| "failed to apply filter")? {
-                                replays.push(MatchedReplay {
-                                    inner: replay,
-                                    path: entry.path().display().to_string(),
-                                });
-                            }
-                        }
-
-                        total += 1;
+                        replay_paths.push(entry.into_path());
                     }
                 }
             } else {
@@ -130,10 +120,33 @@ where
         }
     }
 
+    let replays = replay_paths
+        .par_iter()
+        .filter_map(|path| {
+            let mut matched_replay = None;
+
+            // We have a possible replay, let's parse it!
+            if let Some(replay) = parse(path) {
+                parsed.fetch_add(1, Ordering::SeqCst);
+
+                if filter(&replay, matches).unwrap_or(false) {
+                    matched_replay = Some(MatchedReplay {
+                        inner: replay,
+                        path: path.display().to_string(),
+                    });
+                }
+            }
+
+            total.fetch_add(1, Ordering::SeqCst);
+
+            matched_replay
+        })
+        .collect();
+
     output(&replays, matches)?;
 
-    info!("Found {} replays", total);
-    info!("Parsed {} replays", parsed);
+    info!("Found {} replays", total.into_inner());
+    info!("Parsed {} replays", parsed.into_inner());
     info!("Matched {} replays", replays.len());
 
     Ok(())
