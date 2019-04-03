@@ -99,3 +99,6 @@ args:
         long: show-paths
         help: Outputs a list of the paths of matched replays
         conflicts_with: count
+    - special-csv:
+        long: special-csv
+        hidden: true

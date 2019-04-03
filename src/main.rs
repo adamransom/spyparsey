@@ -2,8 +2,8 @@
 extern crate error_chain;
 
 mod filters;
-mod summary;
 mod matched_replay;
+mod output;
 
 use crate::filters::*;
 use crate::matched_replay::MatchedReplay;
@@ -209,8 +209,10 @@ fn output(replays: &[MatchedReplay], matches: &ArgMatches) -> Result<()> {
         for replay in replays {
             println!("{}", replay.path);
         }
+    } else if matches.is_present("special-csv") {
+        output::table::show(replays, matches)?;
     } else {
-        summary::show(replays, matches);
+        output::summary::show(replays, matches);
     }
 
     Ok(())

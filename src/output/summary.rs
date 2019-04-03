@@ -24,7 +24,7 @@ mod mode_stat_collection;
 mod player_stat_collection;
 mod result_stat_collection;
 
-use super::MatchedReplay;
+use crate::MatchedReplay;
 use clap::ArgMatches;
 use map_stat_collection::MapStatCollection;
 use mission_set_stat_collection::MissionSetStatCollection;
