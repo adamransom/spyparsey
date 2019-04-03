@@ -24,21 +24,21 @@ mod mode_stat_collection;
 mod player_stat_collection;
 mod result_stat_collection;
 
-use self::map_stat_collection::MapStatCollection;
-use self::mission_set_stat_collection::MissionSetStatCollection;
-use self::mission_stat_collection::MissionStatCollection;
-use self::mode_stat_collection::ModeStatCollection;
-use self::player_stat_collection::PlayerStatCollection;
-use self::result_stat_collection::ResultStatCollection;
 use super::MatchedReplay;
 use clap::ArgMatches;
+use map_stat_collection::MapStatCollection;
+use mission_set_stat_collection::MissionSetStatCollection;
+use mission_stat_collection::MissionStatCollection;
+use mode_stat_collection::ModeStatCollection;
+use player_stat_collection::PlayerStatCollection;
+use result_stat_collection::ResultStatCollection;
 use spyparty::Replay;
 use std::collections::HashMap;
 
 /// A trait defining a collection of stats.
 trait StatCollection {
     /// Adds the stats of a replay to the collection.
-    fn aggregate<'a>(&mut self, replay: &Replay, matches: &'a ArgMatches);
+    fn aggregate(&mut self, replay: &Replay, matches: &ArgMatches);
     /// Prints the stats to stdout.
     fn print(&self);
 }
@@ -91,7 +91,7 @@ pub fn show(replays: &Vec<MatchedReplay>, matches: &ArgMatches) {
     }
 
     for replay in replays {
-        for ref mut stats in &mut all_stats {
+        for stats in &mut all_stats {
             stats.aggregate(&replay.inner, matches);
         }
     }

@@ -1,21 +1,14 @@
-#![feature(try_from)]
-
-extern crate spyparty;
 #[macro_use]
 extern crate error_chain;
-extern crate walkdir;
-#[macro_use]
-extern crate clap;
-#[macro_use]
-extern crate log;
-extern crate stderrlog;
 
 mod filters;
 mod summary;
 
+use crate::filters::*;
+use clap::load_yaml;
 use clap::{App, ArgMatches};
-use filters::*;
-use spyparty::{Replay, Map};
+use log::{info, warn};
+use spyparty::{Map, Replay};
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
@@ -23,10 +16,10 @@ use walkdir::WalkDir;
 
 mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
-    error_chain!{}
+    error_chain! {}
 }
 
-use errors::*;
+use crate::errors::*;
 
 pub struct MatchedReplay {
     inner: Replay,
@@ -34,7 +27,7 @@ pub struct MatchedReplay {
 }
 
 fn main() {
-    if let Err(ref e) = run() {
+    if let Err(e) = run() {
         use std::io::Write;
         let stderr = &mut ::std::io::stderr();
         let errmsg = "Error writing to stderr";

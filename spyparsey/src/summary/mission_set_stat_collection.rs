@@ -42,7 +42,7 @@ impl StatCollection for MissionSetStatCollection {
 
             println!(
                 "    {}: {} ({:.1}%)",
-                mission_summary.trim_right_matches(", "),
+                mission_summary.trim_end_matches(", "),
                 value,
                 (**value as f32 / self.total as f32) * 100f32
             );

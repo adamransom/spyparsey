@@ -1,5 +1,5 @@
+use super::Filter;
 use clap::ArgMatches;
-use filters::Filter;
 use spyparty::{GameMode, Replay};
 use std::convert::TryInto;
 

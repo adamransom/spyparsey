@@ -1,5 +1,5 @@
+use super::Filter;
 use clap::ArgMatches;
-use filters::Filter;
 use spyparty::Replay;
 
 /// Filters replays that contain a pair of players.
