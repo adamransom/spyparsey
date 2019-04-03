@@ -3,8 +3,10 @@ extern crate error_chain;
 
 mod filters;
 mod summary;
+mod matched_replay;
 
 use crate::filters::*;
+use crate::matched_replay::MatchedReplay;
 use clap::load_yaml;
 use clap::{App, ArgMatches};
 use log::{info, warn};
@@ -22,11 +24,6 @@ mod errors {
 }
 
 use crate::errors::*;
-
-pub struct MatchedReplay {
-    inner: Replay,
-    path: String,
-}
 
 fn main() {
     if let Err(e) = run() {
@@ -120,7 +117,7 @@ where
         }
     }
 
-    let replays = replay_paths
+    let mut replays = replay_paths
         .par_iter()
         .filter_map(|path| {
             let mut matched_replay = None;
@@ -142,6 +139,8 @@ where
             matched_replay
         })
         .collect::<Vec<_>>();
+
+    replays.sort_unstable();
 
     output(&replays, matches)?;
 
