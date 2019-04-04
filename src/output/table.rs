@@ -24,9 +24,19 @@ pub fn show(replays: &[MatchedReplay], matches: &ArgMatches) -> Result<()> {
 
     add_headers(&mut spy_table, &mut sniper_table, &mut mission_table);
 
+    let mut prev_play_id = u16::max_value();
+    let mut sequence = 0;
+
     for replay in replays {
+        if replay.inner.header.play_id < prev_play_id {
+            sequence += 1;
+        }
+
+        prev_play_id = replay.inner.header.play_id;
+
         add_to_table(
             &replay.inner,
+            sequence,
             name,
             &mut spy_table,
             &mut sniper_table,
@@ -88,6 +98,7 @@ fn add_headers(spy_table: &mut Table, sniper_table: &mut Table, mission_table: &
 /// Adds a replay to the table.
 fn add_to_table(
     replay: &Replay,
+    sequence: u16,
     name: &str,
     spy_table: &mut Table,
     sniper_table: &mut Table,
@@ -103,7 +114,7 @@ fn add_to_table(
         GameMode::Any(required, _) => required,
     };
 
-    row.add_cell(Cell::new(""));
+    row.add_cell(Cell::new(&sequence.to_string()));
     row.add_cell(Cell::new(&result_data.map.to_string()));
 
     if replay.sniper_name() == name {
