@@ -203,7 +203,7 @@ fn parse(path: &Path) -> Option<Replay> {
         match Replay::from_reader(&mut reader) {
             Ok(replay) => {
                 if let Map::Unknown(x) = replay.header.result_data.map {
-                    warn!("unrecognised map in '{}' ({})", path.display(), x);
+                    warn!("unrecognised map in '{}' (0x{:x})", path.display(), x);
                 }
                 return Some(replay);
             }
