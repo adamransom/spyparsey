@@ -32,11 +32,27 @@ impl PartialEq for MatchedReplay {
 
 impl Eq for MatchedReplay {}
 
-/// A struct representing a combination of a replay and the path it was found at.
+/// A struct representing a collection of replays
 pub struct MatchedReplayCollection {
-    /// The parsed replay.
+    /// The collection of replays (after filters)
     pub replays: Vec<MatchedReplay>,
-    /// The path the replay was found at.
+    /// The total number of replays found
     pub total: isize,
+    /// The total number of replays parsed
     pub parsed: isize,
+}
+
+impl MatchedReplayCollection {
+    /// Removes duplicate replays (by game ID) and then sorts them by start time.
+    pub fn dedup_and_sort(&mut self) {
+        self.replays.sort_by(|a, b| {
+            a.inner
+                .header
+                .game_id
+                .partial_cmp(&b.inner.header.game_id)
+                .unwrap()
+        });
+        self.replays.dedup();
+        self.replays.sort_unstable();
+    }
 }

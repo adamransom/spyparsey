@@ -104,7 +104,9 @@ where
 
     now = SystemTime::now();
 
-    let replay_collection = parse_and_filter_replays(replay_paths, matches)?;
+    let mut replay_collection = parse_and_filter_replays(replay_paths, matches)?;
+
+    replay_collection.dedup_and_sort();
 
     let parse_time = now.elapsed().unwrap_or_else(|_| Duration::new(0, 0));
 
@@ -162,7 +164,7 @@ fn parse_and_filter_replays(
     let parsed = AtomicIsize::new(0);
     let total = AtomicIsize::new(0);
 
-    let mut replays = paths
+    let replays = paths
         .par_iter()
         .filter_map(|path| {
             let mut matched_replay = None;
@@ -184,8 +186,6 @@ fn parse_and_filter_replays(
             matched_replay
         })
         .collect::<Vec<_>>();
-
-    replays.sort_unstable();
 
     Ok(MatchedReplayCollection {
         replays,
