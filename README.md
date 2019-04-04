@@ -172,4 +172,4 @@ Seems like I enjoy going for those hard tells!
 
 - Most of the filter options have aliases to their singular counterpart, but behave the same way i.e. `--spy` works the same as `--spies`.
 - A lot of values are accepted for missions and modes e.g. `--modes a4/8` or `--completed-missions contactda`
-- I haven't optimised or done much performance-wise, but it's basically limited by disk read. When running over 10,000 replays it takes about 1 minute to run the first time (regardless of filters) and then subsequent runs take a second or two (again, regardless of filters changing).
+- I haven't optimised or done much performance-wise, but it's basically limited by disk read. When running over 20,000 replays it takes about 20 seconds to run the first time (regardless of filters) and then subsequent runs take less than a second or two (again, regardless of filters changing).
