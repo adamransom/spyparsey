@@ -16,6 +16,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicIsize, Ordering};
+use std::time::{Duration, SystemTime};
 use walkdir::WalkDir;
 
 mod errors {
@@ -95,13 +96,32 @@ where
     I: IntoIterator<Item = P>,
     P: AsRef<Path>,
 {
+    let mut now = SystemTime::now();
+
     let replay_paths = find_replays(paths)?;
+
+    let find_time = now.elapsed().unwrap_or_else(|_| Duration::new(0, 0));
+
+    now = SystemTime::now();
+
     let replay_collection = parse_and_filter_replays(replay_paths, matches)?;
+
+    let parse_time = now.elapsed().unwrap_or_else(|_| Duration::new(0, 0));
 
     output(&replay_collection.replays, matches)?;
 
-    info!("Found {} replays", replay_collection.total);
-    info!("Parsed {} replays", replay_collection.parsed);
+    info!(
+        "Found {} replays ({}.{}s)",
+        replay_collection.total,
+        find_time.as_secs(),
+        find_time.subsec_millis()
+    );
+    info!(
+        "Parsed {} replays ({}.{}s)",
+        replay_collection.parsed,
+        parse_time.as_secs(),
+        parse_time.subsec_millis()
+    );
     info!("Matched {} replays", replay_collection.replays.len());
 
     Ok(())
