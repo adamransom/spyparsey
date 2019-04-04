@@ -20,7 +20,7 @@ pub fn show(replays: &[MatchedReplay], matches: &ArgMatches) -> Result<()> {
 
     let name = matches
         .value_of("players")
-        .unwrap_or(matches.value_of("pair").unwrap());
+        .unwrap_or_else(|| matches.value_of("pair").unwrap());
 
     add_headers(&mut spy_table, &mut sniper_table, &mut mission_table);
 
