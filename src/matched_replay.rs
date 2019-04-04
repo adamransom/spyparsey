@@ -31,3 +31,12 @@ impl PartialEq for MatchedReplay {
 }
 
 impl Eq for MatchedReplay {}
+
+/// A struct representing a combination of a replay and the path it was found at.
+pub struct MatchedReplayCollection {
+    /// The parsed replay.
+    pub replays: Vec<MatchedReplay>,
+    /// The path the replay was found at.
+    pub total: isize,
+    pub parsed: isize,
+}

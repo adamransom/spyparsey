@@ -6,7 +6,7 @@ mod matched_replay;
 mod output;
 
 use crate::filters::*;
-use crate::matched_replay::MatchedReplay;
+use crate::matched_replay::{MatchedReplay, MatchedReplayCollection};
 use clap::load_yaml;
 use clap::{App, ArgMatches};
 use log::{info, warn};
@@ -95,8 +95,23 @@ where
     I: IntoIterator<Item = P>,
     P: AsRef<Path>,
 {
-    let parsed = AtomicIsize::new(0);
-    let total = AtomicIsize::new(0);
+    let replay_paths = find_replays(paths)?;
+    let replay_collection = parse_and_filter_replays(replay_paths, matches)?;
+
+    output(&replay_collection.replays, matches)?;
+
+    info!("Found {} replays", replay_collection.total);
+    info!("Parsed {} replays", replay_collection.parsed);
+    info!("Matched {} replays", replay_collection.replays.len());
+
+    Ok(())
+}
+
+fn find_replays<I, P>(paths: I) -> Result<Vec<PathBuf>>
+where
+    I: IntoIterator<Item = P>,
+    P: AsRef<Path>,
+{
     let mut replay_paths = vec![];
 
     for path in paths {
@@ -117,7 +132,17 @@ where
         }
     }
 
-    let mut replays = replay_paths
+    Ok(replay_paths)
+}
+
+fn parse_and_filter_replays(
+    paths: Vec<PathBuf>,
+    matches: &ArgMatches,
+) -> Result<MatchedReplayCollection> {
+    let parsed = AtomicIsize::new(0);
+    let total = AtomicIsize::new(0);
+
+    let mut replays = paths
         .par_iter()
         .filter_map(|path| {
             let mut matched_replay = None;
@@ -142,13 +167,11 @@ where
 
     replays.sort_unstable();
 
-    output(&replays, matches)?;
-
-    info!("Found {} replays", total.into_inner());
-    info!("Parsed {} replays", parsed.into_inner());
-    info!("Matched {} replays", replays.len());
-
-    Ok(())
+    Ok(MatchedReplayCollection {
+        replays,
+        total: total.into_inner(),
+        parsed: parsed.into_inner(),
+    })
 }
 
 /// Tries to parse a replay at a specific path.
