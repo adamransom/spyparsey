@@ -1,4 +1,5 @@
 use super::Filter;
+use crate::matched_replay::has_player;
 use clap::ArgMatches;
 use spyparty::Replay;
 
@@ -7,7 +8,7 @@ pub struct Players {}
 
 impl Players {
     fn predicate(arg: &str, replay: &Replay) -> bool {
-        replay.has_player(arg)
+        has_player(replay, arg)
     }
 }
 impl Filter for Players {
