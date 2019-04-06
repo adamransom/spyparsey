@@ -2,7 +2,11 @@
 
 A tool for parsing and querying a collection of SpyParty replays.
 
-**This is still very much a work-in-progress!**
+## Installation
+
+- [Download the latest version](https://github.com/adamransom/spyparsey/releases/download/v1.0-beta2)
+- Put it anywhere you like
+- Run it from the command line
 
 ## Usage
 
@@ -236,5 +240,5 @@ Seems like I enjoy going for those hard tells!
 ## Notes
 
 - Most of the filter options have aliases to their singular counterpart, but behave the same way i.e. `--spy` works the same as `--spies`.
-- A lot of values are accepted for missions and modes e.g. `--modes a4/8` or `--completed-missions contactda`
+- For filtering on Steam players, you'll need to suffix their name with `/steam` e.g. `plastikqs/steam`
 - I haven't optimised or done much performance-wise, but it's basically limited by disk read. When running over 20,000 replays it takes about 20 seconds to run the first time (regardless of filters) and then subsequent runs take less than a second or two (again, regardless of filters changing).
