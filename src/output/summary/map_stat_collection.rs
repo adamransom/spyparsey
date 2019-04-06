@@ -17,6 +17,7 @@ impl StatCollection for MapStatCollection {
             Map::Balcony => increment(&mut self.stats, "Balcony"),
             Map::Ballroom => increment(&mut self.stats, "Ballroom"),
             Map::Courtyard => increment(&mut self.stats, "Courtyard"),
+            Map::CrowdedPub => increment(&mut self.stats, "Crowded Pub"),
             Map::DoubleModern => increment(&mut self.stats, "Double Modern"),
             Map::Gallery => increment(&mut self.stats, "Gallery"),
             Map::HighRise => increment(&mut self.stats, "High-Rise"),
