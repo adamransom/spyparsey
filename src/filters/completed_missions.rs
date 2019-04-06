@@ -1,5 +1,6 @@
 use super::Filter;
 use clap::ArgMatches;
+use log::error;
 use spyparty::Replay;
 use std::convert::TryInto;
 
@@ -15,6 +16,7 @@ impl CompletedMissions {
                 .completed_missions
                 .contains(&mission)
         } else {
+            error!("'{}' is not a valid option for the mission filter", arg);
             false
         }
     }

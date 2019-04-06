@@ -1,5 +1,6 @@
 use super::Filter;
 use clap::ArgMatches;
+use log::error;
 use spyparty::Replay;
 use std::convert::TryInto;
 
@@ -11,6 +12,7 @@ impl Maps {
         if let Ok(map) = arg.try_into() {
             replay.header.result_data.map == map
         } else {
+            error!("'{}' is not a valid option for the map filter", arg);
             false
         }
     }

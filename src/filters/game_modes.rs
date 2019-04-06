@@ -1,5 +1,6 @@
 use super::Filter;
 use clap::ArgMatches;
+use log::error;
 use spyparty::{GameMode, Replay};
 use std::convert::TryInto;
 
@@ -9,29 +10,27 @@ pub struct GameModes {}
 impl GameModes {
     fn predicate(arg: &str, replay: &Replay) -> bool {
         match arg {
-            "any" | "a" => {
-                if let GameMode::Any(..) = replay.header.result_data.game_mode {
-                    return true;
-                }
-            }
-            "pick" | "p" => {
-                if let GameMode::Pick(..) = replay.header.result_data.game_mode {
-                    return true;
-                }
-            }
-            "known" | "k" => {
-                if let GameMode::Known(..) = replay.header.result_data.game_mode {
-                    return true;
-                }
-            }
+            "any" | "a" => match replay.header.result_data.game_mode {
+                GameMode::Any(..) => true,
+                _ => false,
+            },
+            "pick" | "p" => match replay.header.result_data.game_mode {
+                GameMode::Pick(..) => true,
+                _ => false,
+            },
+            "known" | "k" => match replay.header.result_data.game_mode {
+                GameMode::Known(..) => true,
+                _ => false,
+            },
             _ => {
                 if let Ok(mode) = arg.try_into() {
-                    return replay.header.result_data.game_mode == mode;
+                    replay.header.result_data.game_mode == mode
+                } else {
+                    error!("'{}' is not a valid option for the game mode filter", arg);
+                    false
                 }
             }
         }
-
-        false
     }
 }
 
