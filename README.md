@@ -68,6 +68,71 @@ OPTIONS:
             Filters based on spies' names
 ```
 
+### All Possible Filter Values
+<details> 
+  <summary>--maps</summary>
+  <ul>
+      <li><code>aquarium</code></li>
+      <li><code>balcony</code></li>
+      <li><code>ballroom</code></li>
+      <li><code>courtyard</code></li>
+      <li><code>"crowded pub"</code> or <code>crowdedpub</code></li>
+      <li><code>"double modern"</code> or <code>doublemodern</code></li>
+      <li><code>gallery</code></li>
+      <li><code>"high rise"</code>, <code>high-rise</code> or <code>highrise</code></li>
+      <li><code>modern</code></li>
+      <li><code>moderne</code></li>
+      <li><code>"old balcony"</code> or <code>oldbalcony</code></li>
+      <li><code>"old ballroom"</code> or <code>oldballroom</code></li>
+      <li><code>"old courtyard 1"</code>, <code>oldcourtyard1</code> or <code>cy1</code></li>
+      <li><code>"old courtyard 2"</code>, <code>oldcourtyard2</code> or <code>cy2</code></li>
+      <li><code>"old gallery"</code> or <code>oldgallery</code></li>
+      <li><code>"old veranda"</code> or <code>oldveranda</code></li>
+      <li><code>panopticon</code> or <code>panop</code></li>
+      <li><code>pub</code></li>
+      <li><code>teien</code></li>
+      <li><code>terrace</code></li>
+      <li><code>veranda</code></li>
+  </ul>
+</details>
+
+<details> 
+  <summary>--completed-missions / --completed-missions-all</summary>
+  <ul>
+      <li><code>"bug ambassador"</code>, <code>bugambassador</code> or <code>bug</code></li>
+      <li><code>"contact double agent"</code>, <code>contactdoubleagent</code>, <code>contactda</code>, <code>contact</code> or <code>bb</code></li>
+      <li><code>"fingerprint ambassador"</code>, <code>fingerprintambassador</code>, <code>fingerprint</code> or <code>fp</code></li>
+      <li><code>"inspect statues"</code>, <code>inspectstatues</code> or <code>inspect</code></li>
+      <li><code>"purloin guest list"</code>, <code>purloinguestlist</code> or <code>purloin</code></li>
+      <li><code>"seduce target"</code>, <code>seducetarget</code> or <code>seduce</code></li>
+      <li><code>"swap statue"</code>, <code>swapstatue</code>, <code>swap</code> or <code>paws</code></li>
+      <li><code>"transfer microfilm"</code>, <code>transfermicrofilm</code>, <code>transfermf</code> or <code>mf</code></li>
+  </ul>
+</details>
+
+<details> 
+  <summary>--modes</summary>
+  <ul>
+      <li><code>any</code> or <code>a</code></li>
+      <li><code>pick</code> or <code>p</code></li>
+      <li><code>known</code> or <code>k</code></li>
+      <li><code>"any 7 of 8"</code>, <code>"any 7/8"</code>, <code>a7/8</code></li>
+      <li><code>"pick 7 of 8"</code>, <code>"pick 7/8"</code>, <code>p7/8</code></li>
+      <li><code>"known 4 of 4"</code>, <code>"known 4/4"</code>, <code>"known 4"</code>, <code>k4</code></li>
+  </ul>
+</details>
+
+<details> 
+  <summary>--result</summary>
+  <ul>
+      <li><code>missionswin</code></li>
+      <li><code>spyshot</code></li>
+      <li><code>civilianshot</code></li>
+      <li><code>timeout</code></li>
+      <li><code>unfinished</code></li>
+  </ul>
+</details>
+
 ## Examples
 
 - Find all replays from a particular player:
