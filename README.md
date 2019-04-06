@@ -4,7 +4,7 @@ A tool for parsing and querying a collection of SpyParty replays.
 
 ## Installation
 
-- [Download the latest version](https://github.com/adamransom/spyparsey/releases/download/v1.0-beta2)
+- [Download the latest version](https://github.com/adamransom/spyparsey/releases/tag/v1.0-beta2)
 - Put it anywhere you like
 - Run it from the command line
 
