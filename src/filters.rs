@@ -1,3 +1,4 @@
+use crate::errors::*;
 use clap::ArgMatches;
 use spyparty::Replay;
 
@@ -59,14 +60,40 @@ mod snipers;
 mod spies;
 mod spy_win;
 
-pub use completed_missions::CompletedMissions;
-pub use completed_missions_all::CompletedMissionsAll;
-pub use game_modes::GameModes;
-pub use maps::Maps;
-pub use pair::Pair;
-pub use players::Players;
-pub use results::Results;
-pub use sniper_win::SniperWin;
-pub use snipers::Snipers;
-pub use spies::Spies;
-pub use spy_win::SpyWin;
+use completed_missions::CompletedMissions;
+use completed_missions_all::CompletedMissionsAll;
+use game_modes::GameModes;
+use maps::Maps;
+use pair::Pair;
+use players::Players;
+use results::Results;
+use sniper_win::SniperWin;
+use snipers::Snipers;
+use spies::Spies;
+use spy_win::SpyWin;
+
+macro_rules! register_filters {
+    ($filters:ident, $($filter:ident),*) => {
+        let $filters: &[&Filter] = &[$(&$filter {}),*];
+    };
+}
+
+/// Filters the replays based on various command line arguments.
+pub fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
+    register_filters!(
+        filters,
+        CompletedMissions,
+        CompletedMissionsAll,
+        GameModes,
+        Maps,
+        Pair,
+        Players,
+        Results,
+        SniperWin,
+        Snipers,
+        Spies,
+        SpyWin
+    );
+
+    Ok(filters.iter().all(|f| f.filter(replay, matches)))
+}

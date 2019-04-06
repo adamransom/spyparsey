@@ -5,7 +5,6 @@ mod filters;
 mod matched_replay;
 mod output;
 
-use crate::filters::*;
 use crate::matched_replay::{MatchedReplay, MatchedReplayCollection};
 use clap::load_yaml;
 use clap::{App, ArgMatches};
@@ -110,7 +109,7 @@ where
 
     let parse_time = now.elapsed().unwrap_or_else(|_| Duration::new(0, 0));
 
-    output(&replay_collection.replays, matches)?;
+    output::show(&replay_collection.replays, matches)?;
 
     info!(
         "Found {} replays ({}.{}s)",
@@ -173,7 +172,7 @@ fn parse_and_filter_replays(
             if let Some(replay) = parse(path) {
                 parsed.fetch_add(1, Ordering::SeqCst);
 
-                if filter(&replay, matches).unwrap_or(false) {
+                if filters::filter(&replay, matches).unwrap_or(false) {
                     matched_replay = Some(MatchedReplay {
                         inner: replay,
                         path: path.display().to_string(),
@@ -216,47 +215,4 @@ fn parse(path: &Path) -> Option<Replay> {
     }
 
     None
-}
-
-macro_rules! register_filters {
-    ($filters:ident, $($filter:ident),*) => {
-        let $filters: &[&Filter] = &[$(&$filter {}),*];
-    };
-}
-
-/// Filters the replays based on various command line arguments.
-fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
-    register_filters!(
-        filters,
-        CompletedMissions,
-        CompletedMissionsAll,
-        GameModes,
-        Maps,
-        Pair,
-        Players,
-        Results,
-        SniperWin,
-        Snipers,
-        Spies,
-        SpyWin
-    );
-
-    Ok(filters.iter().all(|f| f.filter(replay, matches)))
-}
-
-/// Prints various representations of the filtered replays.
-fn output(replays: &[MatchedReplay], matches: &ArgMatches) -> Result<()> {
-    if matches.is_present("count") {
-        println!("{}", replays.len());
-    } else if matches.is_present("show-paths") {
-        for replay in replays {
-            println!("{}", replay.path);
-        }
-    } else if matches.is_present("special-csv") {
-        output::table::show(replays, matches)?;
-    } else {
-        output::summary::show(replays, matches);
-    }
-
-    Ok(())
 }
