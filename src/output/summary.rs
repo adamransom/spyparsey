@@ -17,6 +17,7 @@ macro_rules! print_single {
     };
 }
 
+mod clock_stat_collection;
 mod map_stat_collection;
 mod mission_set_stat_collection;
 mod mission_stat_collection;
@@ -26,6 +27,7 @@ mod result_stat_collection;
 
 use crate::MatchedReplay;
 use clap::ArgMatches;
+use clock_stat_collection::ClockStatCollection;
 use map_stat_collection::MapStatCollection;
 use mission_set_stat_collection::MissionSetStatCollection;
 use mission_stat_collection::MissionStatCollection;
@@ -53,6 +55,7 @@ pub fn show(replays: &[MatchedReplay], matches: &ArgMatches) {
     let mut mode_stats: ModeStatCollection = Default::default();
     let mut result_stats: ResultStatCollection = Default::default();
     let mut player_stats: PlayerStatCollection = Default::default();
+    let mut clock_stats: ClockStatCollection = Default::default();
 
     let mut all_stats: Vec<&mut StatCollection> = Vec::new();
 
@@ -79,6 +82,9 @@ pub fn show(replays: &[MatchedReplay], matches: &ArgMatches) {
     // Always show missions stats
     all_stats.push(&mut mission_stats);
     all_stats.push(&mut mission_set_stats);
+
+    // Always show clock stats
+    all_stats.push(&mut clock_stats);
 
     // Show mode stats if not filtered by modes
     if !matches.is_present("modes") {
