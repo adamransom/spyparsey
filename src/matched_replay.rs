@@ -56,39 +56,3 @@ impl MatchedReplayCollection {
         self.replays.sort_unstable();
     }
 }
-
-/// Checks if the replay contains a particular player.
-pub fn has_player(replay: &Replay, name: &str) -> bool {
-    has_spy(replay, name) || has_sniper(replay, name)
-}
-
-/// Checks if the spy in this replay is a particular player.
-pub fn has_spy(replay: &Replay, name: &str) -> bool {
-    if string_equal_ci(&replay.header.spy_user_name, name) {
-        return true;
-    }
-
-    if let Some(display_name) = &replay.header.spy_display_name {
-        return string_equal_ci(display_name, name);
-    }
-
-    false
-}
-
-/// Checks if the sniper in this replay is a particular player.
-pub fn has_sniper(replay: &Replay, name: &str) -> bool {
-    if string_equal_ci(&replay.header.sniper_user_name, name) {
-        return true;
-    }
-
-    if let Some(display_name) = &replay.header.sniper_display_name {
-        return string_equal_ci(display_name, name);
-    }
-
-    false
-}
-
-/// Compares two strings, with case insensitivity.
-pub fn string_equal_ci(a: &str, b: &str) -> bool {
-    a.to_lowercase() == b.to_lowercase()
-}

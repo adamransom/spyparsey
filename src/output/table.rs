@@ -1,4 +1,5 @@
 use crate::errors::*;
+use crate::utils::{has_sniper, has_spy};
 use crate::MatchedReplay;
 use clap::ArgMatches;
 use prettytable::{cell, row};
@@ -117,7 +118,7 @@ fn add_to_table(
     row.add_cell(Cell::new(&sequence.to_string()));
     row.add_cell(Cell::new(&result_data.map.to_string()));
 
-    if replay.sniper_name() == name {
+    if has_sniper(replay, name) {
         row.add_cell(Cell::new(match result_data.game_result {
             GameResult::MissionsWin | GameResult::CivilianShot => "L",
             _ => "W",
@@ -132,7 +133,7 @@ fn add_to_table(
         row.add_cell(Cell::new(""));
         row.add_cell(Cell::new(&replay.spy_name()));
         sniper_table.add_row(row);
-    } else {
+    } else if has_spy(replay, name) {
         row.add_cell(Cell::new(""));
         row.add_cell(Cell::new(""));
         row.add_cell(Cell::new(match result_data.game_result {

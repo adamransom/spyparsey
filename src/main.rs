@@ -4,6 +4,7 @@ extern crate error_chain;
 mod filters;
 mod matched_replay;
 mod output;
+mod utils;
 
 use crate::matched_replay::{MatchedReplay, MatchedReplayCollection};
 use clap::load_yaml;

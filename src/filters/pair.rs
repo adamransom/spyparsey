@@ -1,5 +1,5 @@
 use super::Filter;
-use crate::matched_replay::has_player;
+use crate::utils::has_player;
 use clap::ArgMatches;
 use spyparty::Replay;
 
