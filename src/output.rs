@@ -2,6 +2,7 @@ use crate::errors::*;
 use crate::MatchedReplay;
 use clap::ArgMatches;
 
+pub mod csv;
 pub mod summary;
 pub mod table;
 
@@ -13,6 +14,8 @@ pub fn show(replays: &[MatchedReplay], matches: &ArgMatches) -> Result<()> {
         for replay in replays {
             println!("{}", replay.path);
         }
+    } else if matches.is_present("csv") {
+        csv::show(replays)?;
     } else if matches.is_present("special-csv") {
         table::show(replays, matches)?;
     } else {

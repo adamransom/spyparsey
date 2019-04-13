@@ -94,11 +94,15 @@ args:
     - count:
         long: count
         help: Outputs a count of the matched replays
-        conflicts_with: show-paths
+        conflicts_with: ["show-paths", "special-csv", "csv"]
     - show-paths:
         long: show-paths
         help: Outputs a list of the paths of matched replays
-        conflicts_with: count
+        conflicts_with: ["count", "special-csv", "csv"]
+    - csv:
+        long: csv
+        help: Outputs matched replays in a verbose CSV format
+        conflicts_with: ["count", "show-paths", "special-csv"]
     - special-csv:
         long: special-csv
         hidden: true
