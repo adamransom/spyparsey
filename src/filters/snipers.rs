@@ -1,4 +1,5 @@
 use super::Filter;
+use crate::utils::has_sniper;
 use clap::ArgMatches;
 use spyparty::Replay;
 
@@ -7,7 +8,7 @@ pub struct Snipers {}
 
 impl Snipers {
     fn predicate(arg: &str, replay: &Replay) -> bool {
-        replay.has_sniper(arg)
+        has_sniper(replay, arg)
     }
 }
 impl Filter for Snipers {

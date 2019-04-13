@@ -1,4 +1,5 @@
 use super::Filter;
+use crate::utils::has_spy;
 use clap::ArgMatches;
 use spyparty::Replay;
 
@@ -7,7 +8,7 @@ pub struct Spies {}
 
 impl Spies {
     fn predicate(arg: &str, replay: &Replay) -> bool {
-        replay.has_spy(arg)
+        has_spy(replay, arg)
     }
 }
 impl Filter for Spies {
