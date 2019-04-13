@@ -1,5 +1,5 @@
 name: spyparsey
-version: "1.0-beta3"
+version: "1.0-beta4"
 author: Adam Ransom
 about: Parses and queries a collection of SpyParty replays
 args:
