@@ -71,7 +71,7 @@ fn add_headers(spy_table: &mut Table, sniper_table: &mut Table, mission_table: &
         "OUTCOME",
         "CHARACTER",
         "CIVILIAN SHOT",
-        "OPPONENT"
+        "OPPONENT",
     ]);
     spy_table.add_row(row![
         "SPY",
@@ -81,7 +81,8 @@ fn add_headers(spy_table: &mut Table, sniper_table: &mut Table, mission_table: &
         "W/L",
         "MISSION COMPLETE",
         "OUTCOME",
-        "OPPONENT"
+        "OPPONENT",
+        "CLOCK USAGE",
     ]);
     mission_table.add_row(row![
         "MAP",
@@ -92,7 +93,7 @@ fn add_headers(spy_table: &mut Table, sniper_table: &mut Table, mission_table: &
         "MISSION #5",
         "MISSION #6",
         "MISSION #7",
-        "MISSION #8"
+        "MISSION #8",
     ]);
 }
 
@@ -147,6 +148,10 @@ fn add_to_table(
         }
         row.add_cell(Cell::new(&format!("{:?}", &result_data.game_result)));
         row.add_cell(Cell::new(&replay.sniper_name()));
+        row.add_cell(Cell::new(&match result_data.clock_start {
+            Some(clock_start) => format!("{:.2}", header.duration / clock_start as f32),
+            None => "".to_string(),
+        }));
         spy_table.add_row(row);
 
         row = Row::empty();
