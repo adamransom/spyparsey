@@ -265,6 +265,5 @@ Seems like I enjoy going for those hard tells!
 ## Notes
 
 - Most of the filter options have aliases to their singular counterpart, but behave the same way i.e. `--spy` works the same as `--spies`.
-- For filtering on Steam players, you'll need to suffix their name with `/steam` e.g. `plastikqs/steam`
 - I haven't optimised or done much performance-wise, but it's basically limited by disk read. When running over 20,000 replays it takes about 20 seconds to run the first time (regardless of filters) and then subsequent runs take less than a second or two (again, regardless of filters changing).
 - SpyParty replays and folders have really long names, especially when players start creating their own organisation. If the entire path of a replay exceeds 260 characters, neither SpyParty nor spyparsey will be able to read these and will be missing in the output. You can use the `-vv` flag to see warnings about files that could not be read.
