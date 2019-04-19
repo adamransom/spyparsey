@@ -4,7 +4,7 @@ A tool for parsing and querying a collection of SpyParty replays.
 
 ## Installation
 
-- [Download the latest version](https://github.com/adamransom/spyparsey/releases/tag/v1.0-beta3)
+- [Download the latest version](https://github.com/adamransom/spyparsey/releases/tag/v1.0-beta5)
 - Put it anywhere you like
 - Run it from the command line
 
@@ -19,6 +19,12 @@ USAGE:
 FLAGS:
         --count
             Outputs a count of the matched replays
+
+        --countdown
+            Filters games that end with the 10 second mission win countdown
+
+        --csv
+            Outputs matched replays in a verbose CSV format
 
     -h, --help
             Prints help information
@@ -73,7 +79,7 @@ OPTIONS:
 ```
 
 ### All Possible Filter Values
-<details> 
+<details>
   <summary>--maps</summary>
   <ul>
       <li><code>aquarium</code></li>
@@ -100,7 +106,7 @@ OPTIONS:
   </ul>
 </details>
 
-<details> 
+<details>
   <summary>--completed-missions / --completed-missions-all</summary>
   <ul>
       <li><code>"bug ambassador"</code>, <code>bugambassador</code> or <code>bug</code></li>
@@ -109,12 +115,12 @@ OPTIONS:
       <li><code>"inspect statues"</code>, <code>inspectstatues</code> or <code>inspect</code></li>
       <li><code>"purloin guest list"</code>, <code>purloinguestlist</code> or <code>purloin</code></li>
       <li><code>"seduce target"</code>, <code>seducetarget</code> or <code>seduce</code></li>
-      <li><code>"swap statue"</code>, <code>swapstatue</code>, <code>swap</code> or <code>paws</code></li>
+      <li><code>"swap statue"</code>, <code>swapstatue</code> or <code>swap</code></li>
       <li><code>"transfer microfilm"</code>, <code>transfermicrofilm</code>, <code>transfermf</code> or <code>mf</code></li>
   </ul>
 </details>
 
-<details> 
+<details>
   <summary>--modes</summary>
   <ul>
       <li><code>any</code> or <code>a</code></li>
@@ -126,7 +132,7 @@ OPTIONS:
   </ul>
 </details>
 
-<details> 
+<details>
   <summary>--result</summary>
   <ul>
       <li><code>missionswin</code></li>
@@ -140,7 +146,7 @@ OPTIONS:
 ## Examples
 
 - Find all replays from a particular player:
-  
+
   `spyparsey --player plastikqs`
 - Find all replays where a player shot a civilian on Ballroom or High-Rise:
 
@@ -148,8 +154,8 @@ OPTIONS:
 - Find all replays where that were an "Any x/y" mode, where both bug and contact DA were completed:
 
   `spyparsey --mode any --completed-missions-all bug bb`
-  
-- Find out how many times you beat Dowsey on Balcony with bug, BB and seduce (hint, its 0):
+
+- Find out how many times you beat Dowsey on Balcony with bug, BB and seduce:
 
   `spyparsey --spy plastikqs --sniper dowsey --map balcony --result missionswin --completed-missions-all bug bb seduce`
 
@@ -158,60 +164,67 @@ OPTIONS:
 There are currently 3 modes of output. Explicit outputs are the following:
 
 - `--count`
-  
+
   Just show the number of replays that matched the filters.
 - `--show-paths`
 
   Show the absolute paths of the replays that matched the filters. This can be piped into another command, maybe used to sort replays into various folders.
-  
+
 However, the default mode if you specify neither of the above is to output a few stats. What exactly is output depends on the filters (i.e. if you filter based on map, you won't get the "Maps Played" section). Below is an example of all the stats possible:
 
 ```
 Total Replays:
-    2326
+    2625
 Player Stats:
-    plastikqs: 1314W 999L (56.5%)
+    plastikqs: 1461W 1149L (55.7%)
 Maps Played:
-    Courtyard: 553 (23.8%)
-    Ballroom: 348 (15.0%)
-    Library: 263 (11.3%)
-    Pub: 263 (11.3%)
-    HighRise: 230 (9.9%)
-    Moderne: 179 (7.7%)
-    Balcony: 128 (5.5%)
-    Gallery: 126 (5.4%)
-    Terrace: 117 (5.0%)
-    Veranda: 115 (4.9%)
+    Courtyard: 592 (22.6%)
+    Ballroom: 389 (14.8%)
+    Pub: 301 (11.5%)
+    Library: 270 (10.3%)
+    High-Rise: 251 (9.6%)
+    Moderne: 188 (7.2%)
+    Gallery: 141 (5.4%)
+    Balcony: 134 (5.1%)
+    Terrace: 132 (5.0%)
+    Veranda: 119 (4.5%)
+    Aquarium: 72 (2.7%)
+    Teien: 32 (1.2%)
+    Panopticon: 2 (0.1%)
+    Old Balcony: 2 (0.1%)
 Missions Completed:
-    Contact Double Agent: 1197 (21.0%)
-    Inspect Statues: 928 (16.3%)
-    Purloin Guest List: 925 (16.3%)
-    Bug Ambassador: 895 (15.7%)
-    Seduce Target: 673 (11.8%)
-    Swap Statue: 610 (10.7%)
-    Transfer Microfilm: 266 (4.7%)
-    Fingerprint Ambassador: 195 (3.4%)
+    Contact Double Agent: 1369 (53.4%)
+    Purloin Guest List: 1023 (45.1%)
+    Inspect Statues: 1016 (47.0%)
+    Bug Ambassador: 1000 (39.7%)
+    Seduce Target: 774 (30.2%)
+    Swap Statue: 692 (31.9%)
+    Transfer Microfilm: 285 (23.4%)
+    Fingerprint Ambassador: 227 (10.2%)
 Completed Mission Sets:
-    Bug, BB, Inspect, Seduce: 56 (8.0%)
-    BB, Inspect, Seduce, Purloin: 43 (6.2%)
-    Bug, BB, Swap, Inspect: 28 (4.0%)
-    BB, Swap, Inspect, Purloin: 28 (4.0%)
-    Bug, BB: 27 (3.9%)
-    BB, Swap, Inspect, Seduce: 26 (3.7%)
-    BB, Inspect, Seduce, Fingerprint: 25 (3.6%)
-    Bug, BB, Seduce: 24 (3.4%)
-    Bug, BB, Inspect, Purloin: 23 (3.3%)
-    Bug, BB, Swap, Seduce: 22 (3.2%)
+    Bug, BB, Inspect, Seduce: 63 (8.0%)
+    BB, Inspect, Seduce, Purloin: 44 (5.6%)
+    BB, Swap, Inspect, Purloin: 33 (4.2%)
+    BB, Swap, Inspect, Seduce: 33 (4.2%)
+    Bug, BB: 30 (3.8%)
+    Bug, BB, Swap, Inspect: 29 (3.7%)
+    Bug, BB, Swap, Seduce: 28 (3.5%)
+    BB, Inspect, Seduce, Fingerprint: 27 (3.4%)
+    Bug, BB, Seduce: 26 (3.3%)
+    Bug, BB, Inspect, Purloin: 25 (3.2%)
+Clock:
+    Average Duration: 2m25s
+    Clock Usage: 73.1%
 Modes Played:
-    Any: 2217 (95.3%)
-    Known: 105 (4.5%)
+    Any: 2499 (95.2%)
+    Known: 122 (4.6%)
     Pick: 4 (0.2%)
 Results:
-    Spy Shot: 1275 (54.8%)
-    Civilian Shot: 501 (21.5%)
-    Missions Win: 453 (19.5%)
-    Spy Timeout: 84 (3.6%)
-    Unfinished: 13 (0.6%)
+    Spy Shot: 1443 (55.0%)
+    Civilian Shot: 553 (21.1%)
+    Missions Win: 518 (19.7%)
+    Spy Timeout: 96 (3.7%)
+    Unfinished: 15 (0.6%)
 ```
 
 These stats become quite useful/interesting when paired with specific filters. For example, you could find out which missions I tend to complete when I win as a spy on High-Rise a3/5:
@@ -219,20 +232,32 @@ These stats become quite useful/interesting when paired with specific filters. F
 ```
 $ spyparsey --spy plastikqs --map highrise --mode a3/5 --result missionswin
 Total Replays:
-    27
+    28
 Player Stats:
-    plastikqs: 27W 0L (100.0%)
+    plastikqs: 28W 0L (100.0%)
+Missions Completed:
+    Contact Double Agent: 19 (79.2%)
+    Seduce Target: 14 (63.6%)
+    Purloin Guest List: 12 (66.7%)
+    Transfer Microfilm: 11 (68.8%)
+    Bug Ambassador: 10 (52.6%)
+    Inspect Statues: 9 (50.0%)
+    Swap Statue: 7 (53.8%)
+    Fingerprint Ambassador: 4 (40.0%)
 Completed Mission Sets:
-    Bug, BB, Transfer MF: 3 (12.0%)
-    BB, Transfer MF, Seduce: 2 (8.0%)
-    Swap, Inspect, Purloin: 2 (8.0%)
-    BB, Inspect, Seduce: 2 (8.0%)
-    BB, Seduce, Purloin: 2 (8.0%)
-    Bug, BB, Purloin: 2 (8.0%)
-    Transfer MF, Seduce, Purloin: 2 (8.0%)
-    Inspect, Seduce, Fingerprint: 1 (4.0%)
-    Bug, Swap, Inspect: 1 (4.0%)
-    BB, Purloin, Fingerprint: 1 (4.0%)
+    Bug, BB, Transfer MF: 3 (11.5%)
+    BB, Seduce, Purloin: 3 (11.5%)
+    Bug, BB, Purloin: 2 (7.7%)
+    Swap, Inspect, Purloin: 2 (7.7%)
+    BB, Inspect, Seduce: 2 (7.7%)
+    Transfer MF, Seduce, Purloin: 2 (7.7%)
+    BB, Transfer MF, Seduce: 2 (7.7%)
+    BB, Transfer MF, Purloin: 1 (3.8%)
+    BB, Inspect, Fingerprint: 1 (3.8%)
+    Bug, Swap, Inspect: 1 (3.8%)
+Clock:
+    Average Duration: 2m39s
+    Clock Usage: 90.4%
 ```
 
 Seems like I enjoy going for those hard tells!
@@ -242,3 +267,4 @@ Seems like I enjoy going for those hard tells!
 - Most of the filter options have aliases to their singular counterpart, but behave the same way i.e. `--spy` works the same as `--spies`.
 - For filtering on Steam players, you'll need to suffix their name with `/steam` e.g. `plastikqs/steam`
 - I haven't optimised or done much performance-wise, but it's basically limited by disk read. When running over 20,000 replays it takes about 20 seconds to run the first time (regardless of filters) and then subsequent runs take less than a second or two (again, regardless of filters changing).
+- SpyParty replays and folders have really long names, especially when players start creating their own organisation. If the entire path of a replay exceeds 260 characters, neither SpyParty nor spyparsey will be able to read these and will be missing in the output. You can use the `-vv` flag to see warnings about files that could not be read.
