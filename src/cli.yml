@@ -60,6 +60,9 @@ args:
     - sniperwin:
         long: sniperwin
         help: Filters games that end in a sniper win
+    - countdown:
+        long: countdown
+        help: Filters games that end with the 10 second mission win countdown
     - modes:
         long: modes
         help: Filters games that are a specific game mode

@@ -50,6 +50,7 @@ macro_rules! basic_presence {
 
 mod completed_missions;
 mod completed_missions_all;
+mod countdown;
 mod game_modes;
 mod maps;
 mod pair;
@@ -62,6 +63,7 @@ mod spy_win;
 
 use completed_missions::CompletedMissions;
 use completed_missions_all::CompletedMissionsAll;
+use countdown::Countdown;
 use game_modes::GameModes;
 use maps::Maps;
 use pair::Pair;
@@ -84,6 +86,7 @@ pub fn filter(replay: &Replay, matches: &ArgMatches) -> Result<bool> {
         filters,
         CompletedMissions,
         CompletedMissionsAll,
+        Countdown,
         GameModes,
         Maps,
         Pair,
