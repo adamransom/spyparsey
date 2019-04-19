@@ -29,12 +29,12 @@ impl StatCollection for PlayerStatCollection {
 
         if let Some(values) = matches.values_of("spies") {
             count_spy_wins = true;
-            players = values.collect();
+            players.append(&mut values.collect());
         }
 
         if let Some(values) = matches.values_of("snipers") {
             count_sniper_wins = true;
-            players = values.collect();
+            players.append(&mut values.collect());
         }
 
         // Only add up wins and losses where a player was a spy.
