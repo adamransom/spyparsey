@@ -33,9 +33,13 @@ impl StatCollection for ClockStatCollection {
 
         println!("    Average Duration: {}m{}s", minutes, seconds);
 
-        println!(
-            "    Clock Usage: {:.1}%",
-            (self.total_duration_with_clock / self.total_clock as f32) * 100f32
-        );
+        if self.total_clock > 0 {
+            println!(
+                "    Clock Usage: {:.1}%",
+                (self.total_duration_with_clock / self.total_clock as f32) * 100f32
+            );
+        } else {
+            println!("    Clock Usage: Unknown");
+        }
     }
 }
