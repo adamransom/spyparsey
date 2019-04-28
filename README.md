@@ -169,6 +169,10 @@ There are currently 3 modes of output. Explicit outputs are the following:
 - `--show-paths`
 
   Show the absolute paths of the replays that matched the filters. This can be piped into another command, maybe used to sort replays into various folders.
+  
+- `--csv`
+
+  Outputs all the matched replays in a rather verbose CSV format. It includes almost every piece of data you can get from the header. I'm sure someone can think of clever ways to use this...
 
 However, the default mode if you specify neither of the above is to output a few stats. What exactly is output depends on the filters (i.e. if you filter based on map, you won't get the "Maps Played" section). Below is an example of all the stats possible:
 
