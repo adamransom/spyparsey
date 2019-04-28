@@ -7,6 +7,7 @@ A tool for parsing and querying a collection of SpyParty replays.
 - [Download the latest version](https://github.com/adamransom/spyparsey/releases/tag/v1.0)
 - Put it anywhere you like
 - Run it from the command line
+- It'll pick up your replays automatically (if they are stored in the default path), otherwise you can specify folders with the `--path` option.
 
 ## Usage
 
