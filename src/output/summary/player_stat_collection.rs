@@ -1,5 +1,5 @@
 use super::StatCollection;
-use crate::utils::{has_sniper, has_spy};
+use crate::utils::{has_sniper, has_spy, percentage};
 use clap::ArgMatches;
 use spyparty::Replay;
 use std::collections::HashMap;
@@ -75,14 +75,27 @@ impl StatCollection for PlayerStatCollection {
     }
 
     fn print(&self) {
+        let mut collection: Vec<_> = self.stats.iter().collect();
+        collection.sort_unstable_by(
+            |(a_name, (a_display, a_wins, _)), (b_name, (b_display, b_wins, _))| {
+                let a_percent = percentage(*a_wins, self.totals[*a_name]);
+                let b_percent = percentage(*b_wins, self.totals[*b_name]);
+
+                b_percent
+                    .partial_cmp(&a_percent)
+                    .unwrap()
+                    .then(a_display.cmp(&b_display))
+            },
+        );
+
         println!("Player Stats:");
-        for (user_name, (display_name, wins, losses)) in &self.stats {
+        for (user_name, (display_name, wins, losses)) in collection {
             println!(
                 "    {}: {}W {}L ({:.1}%)",
                 display_name,
                 wins,
                 losses,
-                (*wins as f32 / self.totals[user_name] as f32) * 100f32
+                percentage(*wins, self.totals[user_name])
             );
         }
     }

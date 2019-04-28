@@ -1,4 +1,5 @@
 use super::{increment, StatCollection};
+use crate::utils::percentage;
 use clap::ArgMatches;
 use spyparty::{Mission, Replay};
 use std::collections::HashMap;
@@ -24,7 +25,15 @@ impl StatCollection for MissionStatCollection {
 
     fn print(&self) {
         let mut collection: Vec<_> = self.stats.iter().collect();
-        collection.sort_by(|(_, a), (_, b)| b.cmp(a));
+        collection.sort_by(|(a_name, a_sum), (b_name, b_sum)| {
+            let a_percent = percentage(**a_sum, self.total[*a_name]);
+            let b_percent = percentage(**b_sum, self.total[*b_name]);
+
+            b_percent
+                .partial_cmp(&a_percent)
+                .unwrap()
+                .then(a_name.cmp(&b_name))
+        });
 
         println!("Missions Completed:");
         for (name, value) in collection {
@@ -32,7 +41,7 @@ impl StatCollection for MissionStatCollection {
                 "    {}: {} ({:.1}%)",
                 name,
                 value,
-                (*value as f32 / self.total[name] as f32) * 100f32
+                percentage(*value, self.total[name])
             );
         }
     }

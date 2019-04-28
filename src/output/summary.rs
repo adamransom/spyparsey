@@ -3,7 +3,9 @@
 macro_rules! print_single {
     ($self:ident, $title:expr) => {
         let mut collection: Vec<_> = $self.stats.iter().collect();
-        collection.sort_by(|(_, a), (_, b)| b.cmp(a));
+        collection.sort_by(|(a_name, a_sum), (b_name, b_sum)| {
+            b_sum.cmp(&a_sum).then(a_name.cmp(&b_name))
+        });
 
         println!("{}:", $title);
         for (name, value) in collection {
@@ -102,7 +104,7 @@ pub fn show(replays: &[MatchedReplay], matches: &ArgMatches) {
         }
     }
 
-    println!("Total Replays: \n    {}", replays.len());
+    println!("Total Replays:\n    {}", replays.len());
 
     for stats in all_stats {
         stats.print();
