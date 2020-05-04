@@ -59,7 +59,7 @@ pub fn show(replays: &[MatchedReplay], matches: &ArgMatches) {
     let mut player_stats: PlayerStatCollection = Default::default();
     let mut clock_stats: ClockStatCollection = Default::default();
 
-    let mut all_stats: Vec<&mut StatCollection> = Vec::new();
+    let mut all_stats: Vec<&mut dyn StatCollection> = Vec::new();
 
     // Early return if no replays!
     if replays.is_empty() {

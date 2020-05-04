@@ -19,7 +19,7 @@ macro_rules! basic_or {
                 true
             }
         }
-    }
+    };
 }
 
 /// Macro to create a very simple AND-type filter for multiple values.
@@ -32,7 +32,7 @@ macro_rules! basic_and {
                 true
             }
         }
-    }
+    };
 }
 
 /// Macro to create a very simple filter for single values.
@@ -45,7 +45,7 @@ macro_rules! basic_presence {
                 true
             }
         }
-    }
+    };
 }
 
 mod completed_missions;
@@ -76,7 +76,7 @@ use spy_win::SpyWin;
 
 macro_rules! register_filters {
     ($filters:ident, $($filter:ident),*) => {
-        let $filters: &[&Filter] = &[$(&$filter {}),*];
+        let $filters: &[&dyn Filter] = &[$(&$filter {}),*];
     };
 }
 
