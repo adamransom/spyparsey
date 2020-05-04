@@ -105,6 +105,7 @@ OPTIONS:
       <li><code>teien</code></li>
       <li><code>terrace</code></li>
       <li><code>veranda</code></li>
+      <li><code>unknown</code></li>
   </ul>
 </details>
 

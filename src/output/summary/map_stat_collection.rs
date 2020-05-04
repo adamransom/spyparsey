@@ -36,7 +36,7 @@ impl StatCollection for MapStatCollection {
             Map::Teien => increment(&mut self.stats, "Teien"),
             Map::Terrace => increment(&mut self.stats, "Terrace"),
             Map::Veranda => increment(&mut self.stats, "Veranda"),
-            _ => {}
+            _ => increment(&mut self.stats, "Unknown"),
         }
 
         self.total += 1;
