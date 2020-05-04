@@ -274,3 +274,16 @@ Seems like I enjoy going for those hard tells!
 - Most of the filter options have aliases to their singular counterpart, but behave the same way i.e. `--spy` works the same as `--spies`.
 - I haven't optimised or done much performance-wise, but it's basically limited by disk read. When running over 20,000 replays it takes about 20 seconds to run the first time (regardless of filters) and then subsequent runs take less than a second or two (again, regardless of filters changing).
 - SpyParty replays and folders have really long names, especially when players start creating their own organisation. If the entire path of a replay exceeds 260 characters, neither SpyParty nor spyparsey will be able to read these and will be missing in the output. You can use the `-vv` flag to see warnings about files that could not be read.
+
+## Contribution
+
+Any fixes or new features are welcomed! The ideal way to provide these would be via a pull request from your own forks.
+
+Contributing is made a little trickier since this project has been split into two parts:
+- this repo, which is basically the UI for the parser, providing filtering and output
+- [the library repo](https://github.com/adamransom/spyparty-rs), which actually contains the code for parsing individual replays
+
+Often, changes to both of these repos may be required for a single feature. An example of this would be adding support for a new venue. Since this may be the most common feature that might require a contribution, below is an example of the changes to each repo that are necessary:
+
+- [adding the venue to the parser](https://github.com/adamransom/spyparty-rs/commit/4edeae2609a5c54ca082c7f345e73b1559db65b4)
+- [adding the venue to the UI (this repo)](https://github.com/adamransom/spyparsey/commit/6af24b47c1ecda208253019077f3d8983fce9a38)
