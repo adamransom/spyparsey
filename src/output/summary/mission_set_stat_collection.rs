@@ -17,7 +17,7 @@ impl StatCollection for MissionSetStatCollection {
         };
         let completed_missions = replay.header.result_data.completed_missions.len() as u8;
 
-        if required_missions == completed_missions {
+        if completed_missions >= required_missions {
             let completed_missions_raw = replay.header.result_data.completed_missions_raw;
             self.stats
                 .entry(completed_missions_raw)
