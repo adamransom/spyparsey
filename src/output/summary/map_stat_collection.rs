@@ -32,6 +32,7 @@ impl StatCollection for MapStatCollection {
             Map::OldVeranda => increment(&mut self.stats, "Old Veranda"),
             Map::Panopticon => increment(&mut self.stats, "Panopticon"),
             Map::Pub => increment(&mut self.stats, "Pub"),
+            Map::Redwoods => increment(&mut self.stats, "Redwoods"),
             Map::Teien => increment(&mut self.stats, "Teien"),
             Map::Terrace => increment(&mut self.stats, "Terrace"),
             Map::Veranda => increment(&mut self.stats, "Veranda"),

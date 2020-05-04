@@ -101,6 +101,7 @@ OPTIONS:
       <li><code>"old veranda"</code> or <code>oldveranda</code></li>
       <li><code>panopticon</code> or <code>panop</code></li>
       <li><code>pub</code></li>
+      <li><code>redwoods</code></li>
       <li><code>teien</code></li>
       <li><code>terrace</code></li>
       <li><code>veranda</code></li>
